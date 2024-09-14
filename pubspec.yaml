@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   time_scheduler_table: ^1.0.1
   flutter_tts: ^4.0.2
+  mysql_client: ^0.0.27
 
 dev_dependencies:
   flutter_test:

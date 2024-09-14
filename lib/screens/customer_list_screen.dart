@@ -1,54 +1,74 @@
 import 'package:flutter/material.dart';
-import 'package:ticket/models/customer.dart';
+import '../services/database_service.dart';
+import '../models/customer.dart';
 
-class CustomerListScreen extends StatelessWidget {
-  // Lista de clientes simulada (puedes reemplazarla con datos de tu base de datos o API)
-  final List<Customer> customers = [
-    Customer(
-      fullName: 'John Doe',
-      vehicleType: 'Sedan',
-      licensePlate: 'ABC123',
-      document: '12345678',
-      company: 'ABC Corp',
-    ),
-    Customer(
-      fullName: 'Jane Smith',
-      vehicleType: 'SUV',
-      licensePlate: 'XYZ987',
-      document: '87654321',
-      company: 'XYZ Inc',
-    ),
-  ];
+class CustomerListScreen extends StatefulWidget {
+  @override
+  _CustomerListScreenState createState() => _CustomerListScreenState();
+}
+
+class _CustomerListScreenState extends State<CustomerListScreen> {
+  final DatabaseService _dbService = DatabaseService();
+  List<Customer> _customers = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarClientes();
+  }
+
+  Future<void> _cargarClientes() async {
+    try {
+      List<Customer> customers = await _dbService.obtenerClientes();
+      print("Lista de customers: ${customers}");
+      setState(() {
+        _customers = customers;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al cargar clientes: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      // Opcional: mostrar mensaje de error al usuario
+    }
+  }
+
+  void _navegarAAgregarCliente() {
+    Navigator.pushNamed(context, '/add_customer').then((_) {
+      _cargarClientes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registered Customers'),
+        title: const Text('Lista de Clientes'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Full Name')),
-              DataColumn(label: Text('Vehicle Type')),
-              DataColumn(label: Text('License Plate')),
-              DataColumn(label: Text('Document')),
-              DataColumn(label: Text('Company')),
-            ],
-            rows: customers.map((customer) {
-              return DataRow(cells: [
-                DataCell(Text(customer.fullName)),
-                DataCell(Text(customer.vehicleType)),
-                DataCell(Text(customer.licensePlate)),
-                DataCell(Text(customer.document)),
-                DataCell(Text(customer.company)),
-              ]);
-            }).toList(),
-          ),
-        ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _customers.isEmpty
+              ? const Center(child: Text('No hay clientes registrados.'))
+              : ListView.builder(
+                  itemCount: _customers.length,
+                  itemBuilder: (context, index) {
+                    Customer customer = _customers[index];
+                    return ListTile(
+                      title: Text(customer.fullName),
+                      subtitle: Text(
+                          'Vehículo: ${customer.vehicleType} - ${customer.ticketNumber}'),
+                      onTap: () {
+                        // Navegar a detalles o editar cliente
+                      },
+                    );
+                  },
+                ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navegarAAgregarCliente,
+        tooltip: 'Agregar Cliente',
+        child: const Icon(Icons.add),
       ),
     );
   }

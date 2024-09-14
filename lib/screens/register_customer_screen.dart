@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import '../models/customer.dart';
+import '../services/database_service.dart';
 
 class RegisterCustomerScreen extends StatefulWidget {
   @override
@@ -14,7 +18,6 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
   String? _company;
   bool _isLoading = false;
 
-  // Simulate the registration action
   void _register() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -22,111 +25,130 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
       });
       _formKey.currentState!.save();
 
-      // Simulate a delay for registration
-      await Future.delayed(const Duration(seconds: 2));
+      // Aquí puedes generar el número de ticket. Por ejemplo:
+      String ticketNumber =
+          _generarNumeroDeTicket(); // Método que genera el número de ticket
 
-      setState(() {
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registration Successful!'),
-        ),
+      // Crear una instancia de Customer con los datos del formulario
+      Customer newCustomer = Customer(
+        fullName: _fullName!,
+        vehicleType: _vehicleType,
+        licensePlate: _licensePlate,
+        document: _document!,
+        company: _company,
+        ticketNumber: ticketNumber, // Proporciona el ticketNumber generado
       );
 
-      // Navigate to another screen if registration is successful.
-      Navigator.pushReplacementNamed(context, '/home');
+      try {
+        DatabaseService dbService = DatabaseService();
+
+        await dbService.insertarCliente(newCustomer);
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Cliente registrado exitosamente!'),
+          ),
+        );
+
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al registrar el cliente: $e'),
+          ),
+        );
+      }
     }
+  }
+
+// Método para generar un número de ticket (puede ser secuencial o basado en otra lógica)
+  String _generarNumeroDeTicket() {
+    // Ejemplo: Generar un número de ticket simple, podrías modificar esta lógica
+    int ticketBase = 1000; // Lógica simple de ejemplo
+    return 'TKT-${ticketBase + Random().nextInt(1000)}'; // Ejemplo de número de ticket
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer Registration'),
+        title: const Text('Registro de Cliente'),
       ),
       body: Center(
-        child: Container(
-          margin: const EdgeInsets.all(32.0),
-          padding: const EdgeInsets.all(32.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Full Name'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your full name';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _fullName = value;
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Vehicle Type'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the vehicle type';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _vehicleType = value;
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'License Plate'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the license plate';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _licensePlate = value;
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Document'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the document';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _document = value;
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: 'Company'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter the company name';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _company = value;
-                  },
-                ),
-                const SizedBox(height: 32.0),
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: _register,
-                        child: const Text('Register Customer'),
-                      ),
-              ],
+        child: SingleChildScrollView(
+          // Para evitar problemas de desbordamiento
+          child: Container(
+            margin: const EdgeInsets.all(32.0),
+            padding: const EdgeInsets.all(32.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration:
+                        const InputDecoration(labelText: 'Nombre Completo'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa el nombre completo';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _fullName = value;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    decoration:
+                        const InputDecoration(labelText: 'Tipo de Vehículo'),
+                    onSaved: (value) {
+                      _vehicleType = value;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Placa'),
+                    onSaved: (value) {
+                      _licensePlate = value;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Documento'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa el documento';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _document = value;
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Empresa'),
+                    onSaved: (value) {
+                      _company = value;
+                    },
+                  ),
+                  const SizedBox(height: 32.0),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: _register,
+                          child: const Text('Registrar Cliente'),
+                        ),
+                ],
+              ),
             ),
           ),
         ),
