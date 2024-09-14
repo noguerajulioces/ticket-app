@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:mysql_client/mysql_client.dart';
 import '../models/customer.dart';
 
+/// Service for interacting with the MySQL database, handling customer CRUD operations.
 class DatabaseService {
-  // Método privado para obtener una conexión
+  /// Private method to establish a MySQL connection.
+  ///
+  /// Returns an open [MySQLConnection] or throws an error if the connection fails.
   Future<MySQLConnection> _getConnection() async {
     try {
       final conn = await MySQLConnection.createConnection(
@@ -14,35 +17,33 @@ class DatabaseService {
         databaseName: 'ticket',
       );
       await conn.connect();
-      print('Conexión exitosa a la base de datos.');
+      if (kDebugMode) {
+        print('Connected to the database successfully.');
+      }
       return conn;
     } catch (e) {
-      print('Error al conectar a la base de datos: $e');
+      print('Error connecting to the database: $e');
       rethrow;
     }
   }
 
-  // Método para obtener la lista de clientes
-  Future<List<Customer>> obtenerClientes() async {
+  /// Fetches a list of all customers from the database.
+  ///
+  /// The customers are ordered by `id` in descending order.
+  /// Returns a [List<Customer>] or throws an error if the query fails.
+  Future<List<Customer>> getCustomers() async {
     MySQLConnection? conn;
     try {
       conn = await _getConnection();
-      print('Conexión establecida: $conn');
+      var result =
+          await conn.execute("SELECT * FROM customers ORDER BY id DESC;");
+      if (kDebugMode) {
+        print('Query executed successfully.');
+      }
 
-      // Ejecutar la consulta
-      var result = await conn.execute(
-        "SELECT * FROM customers ORDER BY id DESC;",
-      );
-      print('Consulta ejecutada.');
-
-      List<Customer> customers = [];
-
-      for (final row in result.rows) {
-        // Convertir la fila en Map<String, String?>
+      return result.rows.map((row) {
         Map<String, String?> rowMap = row.assoc();
-
-        // Crear una instancia de Customer
-        Customer customer = Customer(
+        return Customer(
           id: int.parse(rowMap['id'] ?? '0'),
           fullName: rowMap['full_name'] ?? '',
           vehicleType: rowMap['vehicle_type'] ?? '',
@@ -51,45 +52,40 @@ class DatabaseService {
           company: rowMap['company'] ?? '',
           ticketNumber: rowMap['ticket_number'] ?? '',
         );
-
-        customers.add(customer);
-      }
-
-      print('Clientes obtenidos: ${customers.length}');
-      return customers;
+      }).toList();
     } catch (e, stacktrace) {
-      print('Error al obtener clientes: $e');
+      print('Error fetching customers: $e');
       print('Stacktrace: $stacktrace');
       rethrow;
     } finally {
       if (conn != null) {
         await conn.close();
-        print('Conexión cerrada.');
+        if (kDebugMode) {
+          print('Connection closed.');
+        }
       }
     }
   }
 
-  Future<void> insertarCliente(Customer customer) async {
+  /// Inserts a new customer into the database with an auto-generated ticket number.
+  ///
+  /// The ticket number is generated based on the last ticket in the database.
+  Future<void> insertCustomer(Customer customer) async {
     MySQLConnection? conn;
     try {
       conn = await _getConnection();
-      print('Conexión exitosa: $conn');
 
-      // Obtener el último número de ticket de la base de datos
-      var result = await conn.execute(
-        'SELECT MAX(ticket_number) AS last_ticket FROM customers',
-      );
-
+      // Fetch the last ticket number
+      var result = await conn
+          .execute('SELECT MAX(ticket_number) AS last_ticket FROM customers');
       String lastTicket =
           result.rows.first.assoc()['last_ticket'] ?? 'TKT-0000';
-      print('Último número de ticket: $lastTicket');
 
-      // Generar el siguiente número de ticket
-      String newTicketNumber = _generarSiguienteTicket(lastTicket);
-      print('Nuevo número de ticket generado: $newTicketNumber');
+      // Generate the next ticket number
+      String newTicketNumber = _generateNextTicket(lastTicket);
 
-      // Insertar el cliente con el nuevo número de ticket
-      var insertResult = await conn.execute(
+      // Insert the new customer with the generated ticket number
+      await conn.execute(
         'INSERT INTO customers (full_name, vehicle_type, license_plate, document, company, ticket_number) VALUES (:full_name, :vehicle_type, :license_plate, :document, :company, :ticket_number)',
         {
           'full_name': customer.fullName,
@@ -101,34 +97,37 @@ class DatabaseService {
         },
       );
 
-      print('Cliente insertado correctamente con el número de ticket.');
+      if (kDebugMode) {
+        print(
+            'Customer inserted successfully with ticket number: $newTicketNumber');
+      }
     } catch (e, stacktrace) {
-      print('Error al insertar cliente: $e');
+      print('Error inserting customer: $e');
       print('Stacktrace: $stacktrace');
       rethrow;
     } finally {
       if (conn != null) {
         await conn.close();
-        print('Conexión cerrada.');
+        if (kDebugMode) {
+          print('Connection closed.');
+        }
       }
     }
   }
 
-// Método para generar el siguiente número de ticket basado en el último
-  String _generarSiguienteTicket(String lastTicket) {
-    // Extraer el número del formato 'TKT-XXXX'
+  /// Generates the next ticket number based on the last ticket.
+  ///
+  /// Takes the current `lastTicket` as input and returns the next formatted ticket.
+  String _generateNextTicket(String lastTicket) {
     int lastTicketNumber = int.parse(lastTicket.split('-')[1]);
-    // Incrementar el número
     int newTicketNumber = lastTicketNumber + 1;
-    if (kDebugMode) {
-      print("el new ticketNumber es ${newTicketNumber}");
-    }
-    // Formatear el nuevo número de ticket
     return 'TKT-${newTicketNumber.toString().padLeft(4, '0')}';
   }
 
-  // Método para actualizar un cliente
-  Future<void> actualizarCliente(Customer customer) async {
+  /// Updates an existing customer in the database.
+  ///
+  /// Takes a [Customer] object and updates the corresponding record in the database.
+  Future<void> updateCustomer(Customer customer) async {
     MySQLConnection? conn;
     try {
       conn = await _getConnection();
@@ -144,37 +143,45 @@ class DatabaseService {
           'id': customer.id,
         },
       );
+      if (kDebugMode) {
+        print('Customer updated successfully.');
+      }
     } catch (e, stacktrace) {
-      print('Error al actualizar cliente: $e');
+      print('Error updating customer: $e');
       print('Stacktrace: $stacktrace');
       rethrow;
     } finally {
       if (conn != null) {
         await conn.close();
+        if (kDebugMode) {
+          print('Connection closed.');
+        }
       }
     }
   }
 
-  // Método para eliminar un cliente
-  Future<void> eliminarCliente(int id) async {
+  /// Deletes a customer from the database by their ID.
+  ///
+  /// Takes the [id] of the customer and deletes the corresponding record.
+  Future<void> deleteCustomer(int id) async {
     MySQLConnection? conn;
     try {
       conn = await _getConnection();
 
-      await conn.execute(
-        'DELETE FROM customers WHERE id = :id',
-        {
-          'id': id,
-        },
-      );
+      await conn.execute('DELETE FROM customers WHERE id = :id', {'id': id});
+      if (kDebugMode) {
+        print('Customer deleted successfully.');
+      }
     } catch (e, stacktrace) {
-      print('Error al eliminar cliente: $e');
+      print('Error deleting customer: $e');
       print('Stacktrace: $stacktrace');
       rethrow;
     } finally {
       if (conn != null) {
         await conn.close();
-        print('Conexión cerrada.');
+        if (kDebugMode) {
+          print('Connection closed.');
+        }
       }
     }
   }
