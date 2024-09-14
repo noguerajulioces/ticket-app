@@ -42,7 +42,7 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
       try {
         DatabaseService dbService = DatabaseService();
 
-        await dbService.insertarCliente(newCustomer);
+        await dbService.insertCustomer(newCustomer);
 
         setState(() {
           _isLoading = false;

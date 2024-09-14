@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import '../models/customer.dart';
 
+/// Screen to display the list of customers in a table format.
 class CustomerListScreen extends StatefulWidget {
   @override
   _CustomerListScreenState createState() => _CustomerListScreenState();
@@ -15,59 +17,81 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   @override
   void initState() {
     super.initState();
-    _cargarClientes();
+    _loadCustomers();
   }
 
-  Future<void> _cargarClientes() async {
+  /// Loads the list of customers from the database.
+  /// Sets the state to display the customers or handle errors.
+  Future<void> _loadCustomers() async {
     try {
-      List<Customer> customers = await _dbService.obtenerClientes();
-      print("Lista de customers: ${customers}");
+      final customers = await _dbService.getCustomers();
       setState(() {
         _customers = customers;
         _isLoading = false;
       });
     } catch (e) {
-      print('Error al cargar clientes: $e');
+      if (kDebugMode) {
+        print('Error loading customers: $e');
+      }
       setState(() {
         _isLoading = false;
       });
-      // Opcional: mostrar mensaje de error al usuario
     }
   }
 
-  void _navegarAAgregarCliente() {
-    Navigator.pushNamed(context, '/add_customer').then((_) {
-      _cargarClientes();
-    });
+  /// Builds the table with customer data.
+  Widget _buildCustomerTable() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: MediaQuery.of(context).size.width,
+        ),
+        child: DataTable(
+          columns: const [
+            DataColumn(label: Text('ID')),
+            DataColumn(label: Text('Full Name')),
+            DataColumn(label: Text('Vehicle Type')),
+            DataColumn(label: Text('License Plate')),
+            DataColumn(label: Text('Ticket Number')),
+          ],
+          rows: _customers.map((customer) {
+            return DataRow(cells: [
+              DataCell(Text(customer.id.toString())),
+              DataCell(Text(customer.fullName)),
+              DataCell(Text(customer.vehicleType ?? 'N/A')),
+              DataCell(Text(customer.licensePlate ?? 'N/A')),
+              DataCell(Text(customer.ticketNumber ?? 'N/A')),
+            ]);
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  /// Navigates to the 'Add Customer' screen.
+  /// Reloads the customer list after returning from the 'Add Customer' screen.
+  void _navigateToAddCustomer() {
+    Navigator.pushNamed(context, '/add_customer').then((_) => _loadCustomers());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Clientes'),
+        title: const Text('Customer List'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _customers.isEmpty
-              ? const Center(child: Text('No hay clientes registrados.'))
-              : ListView.builder(
-                  itemCount: _customers.length,
-                  itemBuilder: (context, index) {
-                    Customer customer = _customers[index];
-                    return ListTile(
-                      title: Text(customer.fullName),
-                      subtitle: Text(
-                          'Vehículo: ${customer.vehicleType} - ${customer.ticketNumber}'),
-                      onTap: () {
-                        // Navegar a detalles o editar cliente
-                      },
-                    );
-                  },
+              ? const Center(child: Text('No customers registered.'))
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: _buildCustomerTable(),
                 ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _navegarAAgregarCliente,
-        tooltip: 'Agregar Cliente',
+        onPressed: _navigateToAddCustomer,
+        tooltip: 'Add Customer',
         child: const Icon(Icons.add),
       ),
     );
