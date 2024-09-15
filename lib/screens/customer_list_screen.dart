@@ -54,6 +54,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
             DataColumn(label: Text('Vehicle Type')),
             DataColumn(label: Text('License Plate')),
             DataColumn(label: Text('Ticket Number')),
+            DataColumn(label: Text('Attended')),
           ],
           rows: _customers.map((customer) {
             return DataRow(cells: [
@@ -62,6 +63,9 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
               DataCell(Text(customer.vehicleType ?? 'N/A')),
               DataCell(Text(customer.licensePlate ?? 'N/A')),
               DataCell(Text(customer.ticketNumber ?? 'N/A')),
+              DataCell(
+                Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
+              ),
             ]);
           }).toList(),
         ),
@@ -72,7 +76,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   /// Navigates to the 'Add Customer' screen.
   /// Reloads the customer list after returning from the 'Add Customer' screen.
   void _navigateToAddCustomer() {
-    Navigator.pushNamed(context, '/add_customer').then((_) => _loadCustomers());
+    Navigator.pushNamed(context, '/register').then((_) => _loadCustomers());
   }
 
   @override

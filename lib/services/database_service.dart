@@ -27,6 +27,78 @@ class DatabaseService {
     }
   }
 
+  Future<Customer?> getMostRecentUnattendedCustomer() async {
+    MySQLConnection? conn;
+    try {
+      conn = await _getConnection();
+
+      // Query to get the most recent customer where attended is false, ordered by id in descending order
+      var result = await conn.execute(
+          'SELECT * FROM customers WHERE attended = 0 ORDER BY id ASC LIMIT 1;');
+
+      if (result.rows.isNotEmpty) {
+        Map<String, String?> rowMap = result.rows.first.assoc();
+        return Customer.fromMap(
+            rowMap); // Convert the first row to a Customer object
+      }
+
+      return null; // No more customers where attended is false
+    } catch (e) {
+      print('Error fetching most recent unattended customer: $e');
+      rethrow;
+    } finally {
+      if (conn != null) {
+        await conn.close();
+      }
+    }
+  }
+
+  Future<void> updateCustomerAttended(int customerId) async {
+    MySQLConnection? conn;
+    try {
+      conn = await _getConnection();
+
+      await conn.execute('UPDATE customers SET attended = 1 WHERE id = :id', {
+        'id': customerId,
+      });
+
+      print('Customer marked as attended.');
+    } catch (e) {
+      print('Error updating customer: $e');
+      rethrow;
+    } finally {
+      if (conn != null) {
+        await conn.close();
+      }
+    }
+  }
+
+  Future<Customer?> getNextCustomer() async {
+    MySQLConnection? conn;
+    try {
+      conn = await _getConnection();
+
+      // Assuming you order customers by 'id' or 'ticket_number'
+      var result = await conn.execute(
+          'SELECT * FROM customers WHERE attended = 0 ORDER BY id ASC LIMIT 1;');
+
+      if (result.rows.isNotEmpty) {
+        Map<String, String?> rowMap = result.rows.first.assoc();
+        return Customer.fromMap(
+            rowMap); // Convert the first row to a Customer object
+      }
+
+      return null; // No more customers
+    } catch (e) {
+      print('Error fetching next customer: $e');
+      rethrow;
+    } finally {
+      if (conn != null) {
+        await conn.close();
+      }
+    }
+  }
+
   /// Fetches a list of all customers from the database.
   ///
   /// The customers are ordered by `id` in descending order.
@@ -51,6 +123,9 @@ class DatabaseService {
           document: rowMap['document'] ?? '',
           company: rowMap['company'] ?? '',
           ticketNumber: rowMap['ticket_number'] ?? '',
+          attended: rowMap['attended'] != null
+              ? int.tryParse(rowMap['attended']!)
+              : null,
         );
       }).toList();
     } catch (e, stacktrace) {

@@ -25,18 +25,17 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
       });
       _formKey.currentState!.save();
 
-      // Aquí puedes generar el número de ticket. Por ejemplo:
-      String ticketNumber =
-          _generarNumeroDeTicket(); // Método que genera el número de ticket
+      // Generate the ticket number
+      String ticketNumber = _generarNumeroDeTicket();
 
-      // Crear una instancia de Customer con los datos del formulario
+      // Create a new customer
       Customer newCustomer = Customer(
         fullName: _fullName!,
         vehicleType: _vehicleType,
         licensePlate: _licensePlate,
         document: _document!,
         company: _company,
-        ticketNumber: ticketNumber, // Proporciona el ticketNumber generado
+        ticketNumber: ticketNumber,
       );
 
       try {
@@ -54,7 +53,8 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
           ),
         );
 
-        Navigator.pushReplacementNamed(context, '/home');
+        // Pop the screen and return a result indicating success
+        Navigator.pushReplacementNamed(context, '/home'); // Navigating to home
       } catch (e) {
         setState(() {
           _isLoading = false;
