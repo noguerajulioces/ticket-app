@@ -1,7 +1,10 @@
+import 'dart:async'; // Importamos para usar Timer
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:ticket/services/database_service.dart';
 import 'package:ticket/models/customer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 
 class TicketScreen extends StatefulWidget {
   @override
@@ -12,20 +15,29 @@ class _TicketScreenState extends State<TicketScreen> {
   late FlutterTts flutterTts;
   Customer? _currentCustomer;
   bool _isLoading = true;
+  VideoPlayerController? _videoController;
+  String? _videoUrl;
+  Timer? _pollingTimer; // Declaramos el Timer
 
   @override
   void initState() {
     super.initState();
     flutterTts = FlutterTts();
-    flutterTts.setLanguage("es-MX");
-    flutterTts.setPitch(0.7);
-    flutterTts.setSpeechRate(1);
+    flutterTts.setLanguage("es-US");
+    flutterTts.setPitch(1.0); // Tono normal
+    flutterTts.setSpeechRate(0.5); // Velocidad más baja
 
-    // Load the most recent unattended customer when the screen is initialized
+    // Load the most recent unattended customer and video URL when the screen is initialized
     _loadMostRecentUnattendedCustomer();
+    _loadVideoUrl();
+
+    // Iniciar el polling cada 1 segundo
+    _pollingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _loadMostRecentUnattendedCustomer();
+    });
   }
 
-  // Method to load the most recent unattended customer
+  // Load the most recent unattended customer
   Future<void> _loadMostRecentUnattendedCustomer() async {
     try {
       DatabaseService dbService = DatabaseService();
@@ -44,7 +56,26 @@ class _TicketScreenState extends State<TicketScreen> {
     }
   }
 
-  // Method to play the ticket number
+  // Load the video URL from SharedPreferences
+  Future<void> _loadVideoUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? videoUrl = prefs.getString('videoUrl');
+
+    if (videoUrl != null && videoUrl.isNotEmpty) {
+      _videoController = VideoPlayerController.network(videoUrl)
+        ..initialize().then((_) {
+          setState(() {
+            _videoController!.play(); // Autoplay the video
+          });
+        });
+    } else {
+      setState(() {
+        _videoUrl = null;
+      });
+    }
+  }
+
+  // Play the ticket number using text-to-speech
   Future<void> _speakTicketNumber() async {
     if (_currentCustomer != null) {
       String ticketNumber = _currentCustomer!.ticketNumber ?? "No ticket";
@@ -54,7 +85,9 @@ class _TicketScreenState extends State<TicketScreen> {
 
   @override
   void dispose() {
+    _pollingTimer?.cancel(); // Cancelar el Timer cuando se destruye el widget
     flutterTts.stop();
+    _videoController?.dispose();
     super.dispose();
   }
 
@@ -66,6 +99,7 @@ class _TicketScreenState extends State<TicketScreen> {
     return Scaffold(
       body: Row(
         children: [
+          // Left section with ticket information
           Expanded(
             flex: 1,
             child: Container(
@@ -88,8 +122,7 @@ class _TicketScreenState extends State<TicketScreen> {
                           GestureDetector(
                             onTap: _speakTicketNumber,
                             child: Text(
-                              _currentCustomer?.ticketNumber ??
-                                  'N/A', // Display ticket number or 'N/A'
+                              _currentCustomer?.ticketNumber ?? 'N/A',
                               style: TextStyle(
                                 fontSize: ticketFontSize,
                                 color: Colors.white,
@@ -102,13 +135,22 @@ class _TicketScreenState extends State<TicketScreen> {
               ),
             ),
           ),
+          // Right section for displaying the video
           Expanded(
             flex: 1,
             child: Container(
               color: Colors.black,
-              child: const Center(
-                child:
-                    CircularProgressIndicator(), // Placeholder for additional content
+              child: Center(
+                child: _videoController != null &&
+                        _videoController!.value.isInitialized
+                    ? AspectRatio(
+                        aspectRatio: _videoController!.value.aspectRatio,
+                        child: VideoPlayer(_videoController!),
+                      )
+                    : const Text(
+                        'No video available',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             ),
           ),

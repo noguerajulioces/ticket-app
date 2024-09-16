@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ticket/screens/customer_list_screen.dart';
 import 'package:ticket/screens/login_screen.dart';
+import 'package:ticket/screens/settings_screen.dart';
 import 'package:ticket/screens/ticket_screen.dart';
 
 import 'screens/home_screen.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterCustomerScreen(),
         '/customer_list': (context) => CustomerListScreen(),
         '/tickets': (context) => TicketScreen(),
+        '/settings': (context) => SettingsScreen(),
       },
     );
   }

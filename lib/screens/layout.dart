@@ -52,6 +52,13 @@ class Layout extends StatelessWidget {
                       Navigator.pushNamed(context, '/tickets');
                     },
                   ),
+                  ListTile(
+                    title: const Text('Configuración'),
+                    leading: const Icon(Icons.settings),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/settings');
+                    },
+                  ),
                   // Añade más opciones si es necesario
                   const Spacer(),
                   // Sección inferior con "Bienvenido"

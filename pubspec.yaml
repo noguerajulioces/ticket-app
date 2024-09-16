@@ -38,6 +38,8 @@ dependencies:
   time_scheduler_table: ^1.0.1
   flutter_tts: ^4.0.2
   mysql_client: ^0.0.27
+  video_player: ^2.9.1
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
