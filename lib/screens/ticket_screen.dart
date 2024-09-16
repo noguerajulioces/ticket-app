@@ -41,13 +41,19 @@ class _TicketScreenState extends State<TicketScreen> {
   Future<void> _loadMostRecentUnattendedCustomer() async {
     try {
       DatabaseService dbService = DatabaseService();
-      Customer? recentCustomer =
-          await dbService.getMostRecentUnattendedCustomer();
+      Customer? recentCustomer = await dbService.getLastAttended();
 
-      setState(() {
-        _currentCustomer = recentCustomer;
-        _isLoading = false;
-      });
+      // Verificamos si el cliente ha cambiado
+      if (_currentCustomer == null ||
+          _currentCustomer!.id != recentCustomer!.id) {
+        setState(() {
+          _currentCustomer = recentCustomer;
+          _isLoading = false;
+        });
+
+        // Llamamos al método TTS solo si hay un nuevo cliente
+        await _speakTicketNumber();
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;

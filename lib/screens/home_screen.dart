@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? Column(
                           children: [
                             Text(
-                              'Current Customer: ${_currentCustomer!.fullName}',
+                              'Próximo Cliente: ${_currentCustomer!.fullName}',
                               style: const TextStyle(fontSize: 20),
                             ),
                             const SizedBox(height: 10),
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _loadNextCustomer,
-                    child: const Text('Next Customer'),
+                    child: const Text('Atender Cliente'),
                   ),
                 ],
               ),

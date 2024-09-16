@@ -53,6 +53,32 @@ class DatabaseService {
     }
   }
 
+  Future<Customer?> getLastAttended() async {
+    MySQLConnection? conn;
+    try {
+      conn = await _getConnection();
+
+      // Query to get the most recent customer where attended is false, ordered by id in descending order
+      var result = await conn.execute(
+          'SELECT * FROM customers WHERE attended = 1 ORDER BY id DESC LIMIT 1;');
+
+      if (result.rows.isNotEmpty) {
+        Map<String, String?> rowMap = result.rows.first.assoc();
+        return Customer.fromMap(
+            rowMap); // Convert the first row to a Customer object
+      }
+
+      return null; // No more customers where attended is false
+    } catch (e) {
+      print('Error fetching most recent unattended customer: $e');
+      rethrow;
+    } finally {
+      if (conn != null) {
+        await conn.close();
+      }
+    }
+  }
+
   Future<void> updateCustomerAttended(int customerId) async {
     MySQLConnection? conn;
     try {
