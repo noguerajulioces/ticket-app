@@ -32,7 +32,10 @@ class _TicketScreenState extends State<TicketScreen> {
     _loadVideoUrl();
 
     // Iniciar el polling cada 1 segundo
-    _pollingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _pollingTimer = Timer.periodic(
+        const Duration(
+          seconds: 1,
+        ), (timer) {
       _loadMostRecentUnattendedCustomer();
     });
   }
