@@ -38,6 +38,24 @@ class DatabaseService {
     }
   }
 
+  // Método para verificar el usuario desde la base de datos
+  Future<String?> getPasswordForUser(String username) async {
+    final conn = await _getConnection();
+    var result = await conn.execute(
+      'SELECT password FROM users WHERE username = :username',
+      {'username': username},
+    );
+
+    await conn.close();
+
+    if (result.rows.isEmpty) {
+      return null; // Si no se encuentra el usuario
+    }
+
+    // Retornar la contraseña del usuario encontrado
+    return result.rows.first.colAt(0);
+  }
+
   Future<List<Customer>> getCurrentAndNextCustomers() async {
     final conn = await _getConnection();
 
