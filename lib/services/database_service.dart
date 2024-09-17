@@ -97,17 +97,15 @@ class DatabaseService {
     try {
       conn = await _getConnection();
 
-      // Query to get the most recent customer where attended is false, ordered by id in descending order
       var result = await conn.execute(
           'SELECT * FROM customers WHERE attended = 1 AND DATE(created_at) = CURDATE() ORDER BY id DESC LIMIT 1;');
 
       if (result.rows.isNotEmpty) {
         Map<String, String?> rowMap = result.rows.first.assoc();
-        return Customer.fromMap(
-            rowMap); // Convert the first row to a Customer object
+        return Customer.fromMap(rowMap);
       }
 
-      return null; // No more customers where attended is false
+      return null;
     } catch (e) {
       print('Error fetching most recent unattended customer: $e');
       rethrow;
@@ -180,6 +178,20 @@ class DatabaseService {
 
       return result.rows.map((row) {
         Map<String, String?> rowMap = row.assoc();
+
+        // Convertir 'created_at' a DateTime si está presente
+        DateTime? createdAt = rowMap['created_at'] != null
+            ? DateTime.tryParse(rowMap['created_at']!)
+            : null;
+
+        String formattedCreatedAt = createdAt != null
+            ? '${createdAt.day.toString().padLeft(2, '0')}/'
+                '${createdAt.month.toString().padLeft(2, '0')}/'
+                '${createdAt.year} '
+                '${createdAt.hour.toString().padLeft(2, '0')}:'
+                '${createdAt.minute.toString().padLeft(2, '0')}'
+            : 'Unknown';
+
         return Customer(
           id: int.parse(rowMap['id'] ?? '0'),
           fullName: rowMap['full_name'] ?? '',
@@ -191,6 +203,8 @@ class DatabaseService {
           attended: rowMap['attended'] != null
               ? int.tryParse(rowMap['attended']!)
               : null,
+          createdAt: createdAt,
+          formattedCreatedAt: formattedCreatedAt,
         );
       }).toList();
     } catch (e, stacktrace) {
@@ -262,67 +276,5 @@ class DatabaseService {
     int lastTicketNumber = int.parse(lastTicket.split('-')[1]);
     int newTicketNumber = lastTicketNumber + 1;
     return 'TKT-${newTicketNumber.toString().padLeft(4, '0')}';
-  }
-
-  /// Updates an existing customer in the database.
-  ///
-  /// Takes a [Customer] object and updates the corresponding record in the database.
-  Future<void> updateCustomer(Customer customer) async {
-    MySQLConnection? conn;
-    try {
-      conn = await _getConnection();
-
-      await conn.execute(
-        'UPDATE customers SET full_name = :full_name, vehicle_type = :vehicle_type, license_plate = :license_plate, document = :document, company = :company WHERE id = :id',
-        {
-          'full_name': customer.fullName,
-          'vehicle_type': customer.vehicleType,
-          'license_plate': customer.licensePlate,
-          'document': customer.document,
-          'company': customer.company,
-          'id': customer.id,
-        },
-      );
-      if (kDebugMode) {
-        print('Customer updated successfully.');
-      }
-    } catch (e, stacktrace) {
-      print('Error updating customer: $e');
-      print('Stacktrace: $stacktrace');
-      rethrow;
-    } finally {
-      if (conn != null) {
-        await conn.close();
-        if (kDebugMode) {
-          print('Connection closed.');
-        }
-      }
-    }
-  }
-
-  /// Deletes a customer from the database by their ID.
-  ///
-  /// Takes the [id] of the customer and deletes the corresponding record.
-  Future<void> deleteCustomer(int id) async {
-    MySQLConnection? conn;
-    try {
-      conn = await _getConnection();
-
-      await conn.execute('DELETE FROM customers WHERE id = :id', {'id': id});
-      if (kDebugMode) {
-        print('Customer deleted successfully.');
-      }
-    } catch (e, stacktrace) {
-      print('Error deleting customer: $e');
-      print('Stacktrace: $stacktrace');
-      rethrow;
-    } finally {
-      if (conn != null) {
-        await conn.close();
-        if (kDebugMode) {
-          print('Connection closed.');
-        }
-      }
-    }
   }
 }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import '../models/customer.dart';
 
-/// Screen to display the list of customers in a table format.
 class CustomerListScreen extends StatefulWidget {
   @override
   _CustomerListScreenState createState() => _CustomerListScreenState();
@@ -50,11 +49,12 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
         child: DataTable(
           columns: const [
             DataColumn(label: Text('ID')),
-            DataColumn(label: Text('Full Name')),
-            DataColumn(label: Text('Vehicle Type')),
-            DataColumn(label: Text('License Plate')),
-            DataColumn(label: Text('Ticket Number')),
-            DataColumn(label: Text('Attended')),
+            DataColumn(label: Text('Nombre Completo')),
+            DataColumn(label: Text('Tipo de Vehículo')),
+            DataColumn(label: Text('Placa del vehículo')),
+            DataColumn(label: Text('Ticket Número')),
+            DataColumn(label: Text('Estado')),
+            DataColumn(label: Text('Fecha')),
           ],
           rows: _customers.map((customer) {
             return DataRow(cells: [
@@ -65,6 +65,9 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
               DataCell(Text(customer.ticketNumber ?? 'N/A')),
               DataCell(
                 Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
+              ),
+              DataCell(
+                Text(customer.formattedCreatedAt ?? 'N/A'),
               ),
             ]);
           }).toList(),
@@ -83,7 +86,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer List'),
+        title: const Text('Listado de Tickets'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -95,7 +98,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddCustomer,
-        tooltip: 'Add Customer',
+        tooltip: 'Crear nuevo ticket ',
         child: const Icon(Icons.add),
       ),
     );

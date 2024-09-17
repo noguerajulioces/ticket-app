@@ -11,7 +11,9 @@ class Customer {
   final String document;
   final String? company;
   final String? ticketNumber;
-  final int? attended; // Use nullable int for attended
+  final int? attended;
+  final DateTime? createdAt;
+  final String? formattedCreatedAt;
 
   Customer({
     this.id,
@@ -22,22 +24,25 @@ class Customer {
     this.company,
     this.ticketNumber,
     this.attended,
+    this.createdAt,
+    this.formattedCreatedAt,
   });
 
   factory Customer.fromMap(Map<String, dynamic> map) {
     return Customer(
-      id: map['id'] != null
-          ? int.tryParse(map['id'].toString())
-          : null, // Safely convert to int
-      fullName: map['full_name'] as String,
-      vehicleType: map['vehicle_type'] as String?,
-      licensePlate: map['license_plate'] as String?,
-      document: map['document'] as String,
-      company: map['company'] as String?,
-      ticketNumber: map['ticket_number'] as String?,
-      attended: map['attended'] != null
-          ? int.tryParse(map['attended'].toString())
-          : null, // Safely convert to int
-    );
+        id: map['id'] != null
+            ? int.tryParse(map['id'].toString())
+            : null, // Safely convert to int
+        fullName: map['full_name'] as String,
+        vehicleType: map['vehicle_type'] as String?,
+        licensePlate: map['license_plate'] as String?,
+        document: map['document'] as String,
+        company: map['company'] as String?,
+        ticketNumber: map['ticket_number'] as String?,
+        attended: map['attended'] != null
+            ? int.tryParse(map['attended'].toString())
+            : null,
+        createdAt: map['createdApp'] as DateTime?,
+        formattedCreatedAt: map['formattedCreatedAt'] as String?);
   }
 }
