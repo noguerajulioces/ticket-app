@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,7 +69,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _selectVideo() async {
-    // Método para seleccionar video (puedes implementar la lógica aquí)
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.video,
+    );
+
+    if (result != null) {
+      String? filePath = result.files.single.path;
+      setState(() {
+        _videoUrl = filePath;
+      });
+
+      // Guardar la ruta del video en SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('videoUrl', _videoUrl!);
+    }
   }
 
   @override
