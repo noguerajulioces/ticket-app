@@ -63,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Settings saved!')),
+        const SnackBar(content: Text('¡Configuración guardada!')),
       );
     }
   }
@@ -83,6 +83,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('videoUrl', _videoUrl!);
     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('¡Video guardado!')),
+    );
   }
 
   @override
