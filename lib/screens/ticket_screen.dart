@@ -117,61 +117,78 @@ class _TicketScreenState extends State<TicketScreen> {
     double ticketFontSize = screenWidth * 0.08;
 
     return Scaffold(
-      body: Row(
+      body: Stack(
         children: [
-          // Left section with ticket information
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.green,
-              child: Center(
-                child: _isLoading
-                    ? const CircularProgressIndicator() // Show loader while fetching customer
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Ticket',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: _speakTicketNumber,
-                            child: Text(
-                              _currentCustomer?.ticketNumber ?? 'N/A',
-                              style: TextStyle(
-                                fontSize: ticketFontSize,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              // Left section with ticket information
+              Expanded(
+                flex: 1,
+                child: Container(
+                  color: Colors.green,
+                  child: Center(
+                    child: _isLoading
+                        ? const CircularProgressIndicator() // Show loader while fetching customer
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Ticket',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: _speakTicketNumber,
+                                child: Text(
+                                  _currentCustomer?.ticketNumber ?? 'N/A',
+                                  style: TextStyle(
+                                    fontSize: ticketFontSize,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                  ),
+                ),
               ),
-            ),
+              // Right section for displaying the video
+              Expanded(
+                flex: 1,
+                child: Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : _videoUrl != null &&
+                                _videoController != null &&
+                                _videoController!.value.isInitialized
+                            ? AspectRatio(
+                                aspectRatio:
+                                    _videoController!.value.aspectRatio,
+                                child: VideoPlayer(_videoController!),
+                              )
+                            : const Text('No video available'),
+                  ),
+                ),
+              ),
+            ],
           ),
-          // Right section for displaying the video
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.black,
-              child: Center(
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : _videoUrl != null &&
-                            _videoController != null &&
-                            _videoController!.value.isInitialized
-                        ? AspectRatio(
-                            aspectRatio: _videoController!.value.aspectRatio,
-                            child: VideoPlayer(_videoController!),
-                          )
-                        : const Text('No video available'),
-              ),
+          // Botón pequeño para volver al inicio
+          Positioned(
+            top: 20, // Puedes ajustar la posición vertical
+            left: 20, // Puedes ajustar la posición horizontal
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              iconSize: 20, // Tamaño del ícono
+              onPressed: () {
+                Navigator.of(context).pop(); // Volver a la pantalla anterior
+              },
             ),
           ),
         ],
