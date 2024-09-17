@@ -114,7 +114,7 @@ class _TicketScreenState extends State<TicketScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double ticketFontSize = screenWidth * 0.1;
+    double ticketFontSize = screenWidth * 0.08;
 
     return Scaffold(
       body: Row(
