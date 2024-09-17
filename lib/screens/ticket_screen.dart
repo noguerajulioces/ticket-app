@@ -1,4 +1,5 @@
 import 'dart:async'; // Importamos para usar Timer
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:ticket/services/database_service.dart';
@@ -66,19 +67,27 @@ class _TicketScreenState extends State<TicketScreen> {
   }
 
   // Load the video URL from SharedPreferences
+  // Método para cargar la URL del video guardada en SharedPreferences
   Future<void> _loadVideoUrl() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? videoUrl = prefs.getString('videoUrl');
 
     if (videoUrl != null && videoUrl.isNotEmpty) {
-      _videoController = VideoPlayerController.network(videoUrl)
+      setState(() {
+        _videoUrl = videoUrl;
+      });
+
+      // Inicializar el controlador del video
+      _videoController = VideoPlayerController.file(File(_videoUrl!))
         ..initialize().then((_) {
           setState(() {
+            _isLoading = false;
             _videoController!.play(); // Autoplay the video
           });
         });
     } else {
       setState(() {
+        _isLoading = false;
         _videoUrl = null;
       });
     }
@@ -150,16 +159,16 @@ class _TicketScreenState extends State<TicketScreen> {
             child: Container(
               color: Colors.black,
               child: Center(
-                child: _videoController != null &&
-                        _videoController!.value.isInitialized
-                    ? AspectRatio(
-                        aspectRatio: _videoController!.value.aspectRatio,
-                        child: VideoPlayer(_videoController!),
-                      )
-                    : const Text(
-                        'No video available',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : _videoUrl != null &&
+                            _videoController != null &&
+                            _videoController!.value.isInitialized
+                        ? AspectRatio(
+                            aspectRatio: _videoController!.value.aspectRatio,
+                            child: VideoPlayer(_videoController!),
+                          )
+                        : Text('No video available'),
               ),
             ),
           ),

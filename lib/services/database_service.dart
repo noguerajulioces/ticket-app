@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:mysql_client/mysql_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/customer.dart';
 
 /// Service for interacting with the MySQL database, handling customer CRUD operations.
@@ -9,13 +10,23 @@ class DatabaseService {
   /// Returns an open [MySQLConnection] or throws an error if the connection fails.
   Future<MySQLConnection> _getConnection() async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Cargar la configuración de conexión desde SharedPreferences
+      String host = prefs.getString('dbHost') ?? '127.0.0.1';
+      int port = int.parse(prefs.getString('dbPort') ?? '3306');
+      String userName = prefs.getString('dbUserName') ?? '';
+      String password = prefs.getString('dbPassword') ?? '';
+      String databaseName = prefs.getString('dbName') ?? '';
+
       final conn = await MySQLConnection.createConnection(
-        host: '127.0.0.1',
-        port: 3306,
-        userName: 'noguerajulioces',
-        password: 'noguerajulioces',
-        databaseName: 'ticket',
+        host: host,
+        port: port,
+        userName: userName,
+        password: password,
+        databaseName: databaseName,
       );
+
       await conn.connect();
       if (kDebugMode) {
         print('Connected to the database successfully.');
