@@ -162,7 +162,7 @@ class _TicketScreenState extends State<TicketScreen> {
               color: Colors.black,
               child: Center(
                 child: _isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : _videoUrl != null &&
                             _videoController != null &&
                             _videoController!.value.isInitialized
@@ -170,7 +170,7 @@ class _TicketScreenState extends State<TicketScreen> {
                             aspectRatio: _videoController!.value.aspectRatio,
                             child: VideoPlayer(_videoController!),
                           )
-                        : Text('No video available'),
+                        : const Text('No video available'),
               ),
             ),
           ),
