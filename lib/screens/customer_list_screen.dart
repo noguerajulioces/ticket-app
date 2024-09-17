@@ -49,25 +49,25 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
         child: DataTable(
           columns: const [
             DataColumn(label: Text('ID')),
+            DataColumn(label: Text('Fecha')),
             DataColumn(label: Text('Nombre Completo')),
             DataColumn(label: Text('Tipo de Vehículo')),
             DataColumn(label: Text('Placa del vehículo')),
             DataColumn(label: Text('Ticket Número')),
             DataColumn(label: Text('Estado')),
-            DataColumn(label: Text('Fecha')),
           ],
           rows: _customers.map((customer) {
             return DataRow(cells: [
               DataCell(Text(customer.id.toString())),
+              DataCell(
+                Text(customer.formattedCreatedAt ?? 'N/A'),
+              ),
               DataCell(Text(customer.fullName)),
               DataCell(Text(customer.vehicleType ?? 'N/A')),
               DataCell(Text(customer.licensePlate ?? 'N/A')),
               DataCell(Text(customer.ticketNumber ?? 'N/A')),
               DataCell(
                 Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
-              ),
-              DataCell(
-                Text(customer.formattedCreatedAt ?? 'N/A'),
               ),
             ]);
           }).toList(),
