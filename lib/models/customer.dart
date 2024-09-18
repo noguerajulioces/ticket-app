@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 /// Class representing a customer, storing information related to their vehicle,
 /// identification document, associated company, and ticket number.
 

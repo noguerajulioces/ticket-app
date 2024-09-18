@@ -42,12 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Iniciar Sesión'),
-      ),
+      backgroundColor: Colors.white,
       body: Center(
         child: Container(
-          margin: const EdgeInsets.all(32.0),
+          margin: const EdgeInsets.all(172.0),
           padding: const EdgeInsets.all(32.0),
           child: Form(
             key: _formKey,

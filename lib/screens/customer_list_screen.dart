@@ -50,42 +50,46 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
         constraints: BoxConstraints(
           minWidth: MediaQuery.of(context).size.width,
         ),
-        child: DataTable(
-          columns: const [
-            DataColumn(label: Text('ID')),
-            DataColumn(label: Text('Fecha')),
-            DataColumn(label: Text('Nombre Completo')),
-            DataColumn(label: Text('Tipo de Vehículo')),
-            DataColumn(label: Text('Placa del vehículo')),
-            DataColumn(label: Text('Ticket Número')),
-            DataColumn(label: Text('Estado')),
-            DataColumn(label: Text('Imprimir')),
-          ],
-          rows: _customers.map((customer) {
-            return DataRow(
-              cells: [
-                DataCell(Text(customer.id.toString())),
-                DataCell(
-                  Text(customer.formattedCreatedAt ?? 'N/A'),
-                ),
-                DataCell(Text(customer.fullName)),
-                DataCell(Text(customer.vehicleType ?? 'N/A')),
-                DataCell(Text(customer.licensePlate ?? 'N/A')),
-                DataCell(Text(customer.ticketNumber ?? 'N/A')),
-                DataCell(
-                  Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
-                ),
-                DataCell(ElevatedButton(
-                  onPressed: () async {
-                    await printerService.findAndPrintViaUsb(context);
-                  },
-                  child: const Text(
-                    'Imprimir',
+        child: Container(
+          margin: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('ID')),
+              DataColumn(label: Text('Fecha')),
+              DataColumn(label: Text('Nombre Completo')),
+              DataColumn(label: Text('Tipo de Vehículo')),
+              DataColumn(label: Text('Placa del vehículo')),
+              DataColumn(label: Text('Ticket Número')),
+              DataColumn(label: Text('Estado')),
+              DataColumn(label: Text('Imprimir')),
+            ],
+            rows: _customers.map((customer) {
+              return DataRow(
+                cells: [
+                  DataCell(Text(customer.id.toString())),
+                  DataCell(
+                    Text(customer.formattedCreatedAt ?? 'N/A'),
                   ),
-                ))
-              ],
-            );
-          }).toList(),
+                  DataCell(Text(customer.fullName)),
+                  DataCell(Text(customer.vehicleType ?? 'N/A')),
+                  DataCell(Text(customer.licensePlate ?? 'N/A')),
+                  DataCell(Text(customer.ticketNumber ?? 'N/A')),
+                  DataCell(
+                    Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
+                  ),
+                  DataCell(
+                    ElevatedButton(
+                      onPressed: () async {
+                        await printerService.findAndPrintViaUsb(context);
+                      },
+                      child: const Icon(Icons.print),
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
@@ -112,9 +116,13 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                   child: _buildCustomerTable(),
                 ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF00A2ED),
         onPressed: _navigateToAddCustomer,
         tooltip: 'Crear nuevo ticket ',
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

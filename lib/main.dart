@@ -19,7 +19,28 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Generación de Turnos',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: const Color(0xFF00A2ED),
+        scaffoldBackgroundColor: Colors.white,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black),
+          bodyMedium: TextStyle(color: Colors.black),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: const Color(0xFF00A2ED),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF00A2ED),
+            titleTextStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 20.0,
+            ),
+            iconTheme: IconThemeData(
+              color: Colors.white,
+              size: 15.0,
+            )),
       ),
       initialRoute: '/',
       routes: {
