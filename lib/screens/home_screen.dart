@@ -85,17 +85,58 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Center(
         child: _isLoading
             ? const CircularProgressIndicator()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildCurrentTurnInfo(),
-                  const SizedBox(height: 20),
-                  _buildNextTurnInfo(),
-                  const SizedBox(height: 20),
-                  _buildAttendButton(),
-                  const SizedBox(height: 20),
-                  _buildRecallButton(),
-                ],
+            : Padding(
+                padding: const EdgeInsets.all(
+                    16.0), // Padding alrededor de todo el contenido
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Sección izquierda: Botones con margen y padding
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0), // Padding interno
+                        margin: const EdgeInsets.only(
+                            right:
+                                20.0), // Margen entre los botones y la separación
+                        color: Colors.grey[
+                            200], // Color de fondo opcional para resaltar el área
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment
+                              .stretch, // Asegura que los botones ocupen todo el ancho
+                          children: [
+                            _buildAttendButton(),
+                            const SizedBox(height: 20),
+                            _buildRecallButton(),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Sección derecha: Información de turnos con margen y padding
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0), // Padding interno
+                        margin: const EdgeInsets.only(
+                            left:
+                                20.0), // Margen entre los textos y la separación
+                        color: Colors.grey[
+                            100], // Color de fondo opcional para resaltar el área
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildCurrentTurnInfo(),
+                            const SizedBox(height: 20),
+                            _buildNextTurnInfo(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
       ),
     );
