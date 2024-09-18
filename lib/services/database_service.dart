@@ -259,8 +259,7 @@ class DatabaseService {
       // Fetch the last ticket number
       var result = await conn
           .execute('SELECT MAX(ticket_number) AS last_ticket FROM customers');
-      String lastTicket =
-          result.rows.first.assoc()['last_ticket'] ?? 'TKT-0000';
+      String lastTicket = result.rows.first.assoc()['last_ticket'] ?? 'A0';
 
       // Generate the next ticket number
       String newTicketNumber = _generateNextTicket(lastTicket);
@@ -300,8 +299,26 @@ class DatabaseService {
   ///
   /// Takes the current `lastTicket` as input and returns the next formatted ticket.
   String _generateNextTicket(String lastTicket) {
-    int lastTicketNumber = int.parse(lastTicket.split('-')[1]);
-    int newTicketNumber = lastTicketNumber + 1;
-    return 'TKT-${newTicketNumber.toString().padLeft(4, '0')}';
+    // Extract the letter and the number from the last ticket
+    String lastLetter = lastTicket[0];
+    int lastNumber = int.parse(lastTicket.substring(1));
+
+    // Increment the number
+    lastNumber++;
+
+    // If the number exceeds 99, reset to 1 and increment the letter
+    if (lastNumber > 99) {
+      lastNumber = 1;
+      // Increment the letter (A -> B -> C ...)
+      lastLetter = String.fromCharCode(lastLetter.codeUnitAt(0) + 1);
+    }
+
+    // If the letter exceeds 'Z', reset to 'A'
+    if (lastLetter.codeUnitAt(0) > 'Z'.codeUnitAt(0)) {
+      lastLetter = 'A';
+    }
+
+    // Return the new ticket number (e.g., "A1", "B45", etc.)
+    return '$lastLetter$lastNumber';
   }
 }
