@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Carga los clientes actual y próximo usando una única consulta
   Future<void> _loadInitialCustomers() async {
     final currentCustomer = await _dbService.getCurrentCustomers();
-    final nextCustomer = await _dbService.getNextCustomer();
+    final nextCustomer = await _dbService.getNextCustomers();
 
     setState(() {
       if (currentCustomer != null) {
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _isLoading = true;
     });
 
-    final nextCustomer = await _dbService.getNextCustomer();
+    final nextCustomer = await _dbService.getNextCustomers();
 
     setState(() {
       _nextCustomer = nextCustomer;

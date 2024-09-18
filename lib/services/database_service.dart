@@ -38,45 +38,6 @@ class DatabaseService {
     }
   }
 
-  Future<List<Customer>> getCurrentAndNextCustomers() async {
-    final conn = await _getConnection();
-
-    try {
-      // Ejecutar la consulta combinada
-      var result = await conn.execute('''
-        (
-          SELECT * FROM customers WHERE attended = 1 ORDER BY id DESC LIMIT 1
-        ) 
-        UNION ALL 
-        (
-          SELECT * FROM customers WHERE attended = 0 ORDER BY id ASC LIMIT 1
-        );
-      ''');
-
-      List<Customer> customers = result.rows.map((row) {
-        // Convierte la fila en un Customer
-        Map<String, String?> rowMap = row.assoc();
-        return Customer(
-          id: int.parse(rowMap['id'] ?? '0'),
-          fullName: rowMap['full_name'] ?? '',
-          vehicleType: rowMap['vehicle_type'] ?? '',
-          licensePlate: rowMap['license_plate'] ?? '',
-          document: rowMap['document'] ?? '',
-          company: rowMap['company'] ?? '',
-          ticketNumber: rowMap['ticket_number'] ?? '',
-          attended: int.parse(rowMap['attended'] ?? '0'),
-        );
-      }).toList();
-
-      return customers; // Retorna los clientes en una lista
-    } catch (e) {
-      print('Error al obtener los clientes: $e');
-      rethrow;
-    } finally {
-      await conn.close();
-    }
-  }
-
   // Método para verificar el usuario desde la base de datos
   Future<String?> getPasswordForUser(String username) async {
     final conn = await _getConnection();
@@ -100,7 +61,6 @@ class DatabaseService {
     final conn = await _getConnection();
 
     try {
-      // Consulta para obtener el cliente atendido más reciente
       var result = await conn.execute('''
       SELECT * FROM customers WHERE attended = 1 ORDER BY id DESC LIMIT 1;
     ''');
@@ -161,32 +121,6 @@ class DatabaseService {
     }
   }
 
-  Future<Customer?> getMostRecentUnattendedCustomer() async {
-    MySQLConnection? conn;
-    try {
-      conn = await _getConnection();
-
-      // Query to get the most recent customer where attended is false, ordered by id in descending order
-      var result = await conn.execute(
-          'SELECT * FROM customers WHERE attended = 0 ORDER BY id ASC LIMIT 1;');
-
-      if (result.rows.isNotEmpty) {
-        Map<String, String?> rowMap = result.rows.first.assoc();
-        return Customer.fromMap(
-            rowMap); // Convert the first row to a Customer object
-      }
-
-      return null; // No more customers where attended is false
-    } catch (e) {
-      print('Error fetching most recent unattended customer: $e');
-      rethrow;
-    } finally {
-      if (conn != null) {
-        await conn.close();
-      }
-    }
-  }
-
   Future<Customer?> getLastAttended() async {
     MySQLConnection? conn;
     try {
@@ -221,32 +155,6 @@ class DatabaseService {
       });
     } catch (e) {
       print('Error updating customer: $e');
-      rethrow;
-    } finally {
-      if (conn != null) {
-        await conn.close();
-      }
-    }
-  }
-
-  Future<Customer?> getNextCustomer() async {
-    MySQLConnection? conn;
-    try {
-      conn = await _getConnection();
-
-      // Assuming you order customers by 'id' or 'ticket_number'
-      var result = await conn.execute(
-          'SELECT * FROM customers WHERE attended = 0 ORDER BY id ASC LIMIT 1;');
-
-      if (result.rows.isNotEmpty) {
-        Map<String, String?> rowMap = result.rows.first.assoc();
-        return Customer.fromMap(
-            rowMap); // Convert the first row to a Customer object
-      }
-
-      return null; // No more customers
-    } catch (e) {
-      print('Error fetching next customer: $e');
       rethrow;
     } finally {
       if (conn != null) {
