@@ -38,24 +38,6 @@ class DatabaseService {
     }
   }
 
-  // Método para verificar el usuario desde la base de datos
-  Future<String?> getPasswordForUser(String username) async {
-    final conn = await _getConnection();
-    var result = await conn.execute(
-      'SELECT password FROM users WHERE username = :username',
-      {'username': username},
-    );
-
-    await conn.close();
-
-    if (result.rows.isEmpty) {
-      return null; // Si no se encuentra el usuario
-    }
-
-    // Retornar la contraseña del usuario encontrado
-    return result.rows.first.colAt(0);
-  }
-
   Future<List<Customer>> getCurrentAndNextCustomers() async {
     final conn = await _getConnection();
 
@@ -89,6 +71,90 @@ class DatabaseService {
       return customers; // Retorna los clientes en una lista
     } catch (e) {
       print('Error al obtener los clientes: $e');
+      rethrow;
+    } finally {
+      await conn.close();
+    }
+  }
+
+  // Método para verificar el usuario desde la base de datos
+  Future<String?> getPasswordForUser(String username) async {
+    final conn = await _getConnection();
+    var result = await conn.execute(
+      'SELECT password FROM users WHERE username = :username',
+      {'username': username},
+    );
+
+    await conn.close();
+
+    if (result.rows.isEmpty) {
+      return null; // Si no se encuentra el usuario
+    }
+
+    // Retornar la contraseña del usuario encontrado
+    return result.rows.first.colAt(0);
+  }
+
+  /// Obtiene el cliente atendido más reciente
+  Future<Customer?> getCurrentCustomers() async {
+    final conn = await _getConnection();
+
+    try {
+      // Consulta para obtener el cliente atendido más reciente
+      var result = await conn.execute('''
+      SELECT * FROM customers WHERE attended = 1 ORDER BY id DESC LIMIT 1;
+    ''');
+
+      if (result.rows.isNotEmpty) {
+        Map<String, String?> rowMap = result.rows.first.assoc();
+        return Customer(
+          id: int.parse(rowMap['id'] ?? '0'),
+          fullName: rowMap['full_name'] ?? '',
+          vehicleType: rowMap['vehicle_type'] ?? '',
+          licensePlate: rowMap['license_plate'] ?? '',
+          document: rowMap['document'] ?? '',
+          company: rowMap['company'] ?? '',
+          ticketNumber: rowMap['ticket_number'] ?? '',
+          attended: int.parse(rowMap['attended'] ?? '0'),
+        );
+      } else {
+        return null; // No hay cliente actual
+      }
+    } catch (e) {
+      print('Error al obtener el cliente actual: $e');
+      rethrow;
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Obtiene el próximo cliente no atendido
+  Future<Customer?> getNextCustomers() async {
+    final conn = await _getConnection();
+
+    try {
+      // Consulta para obtener el próximo cliente no atendido
+      var result = await conn.execute('''
+      SELECT * FROM customers WHERE attended = 0 ORDER BY id ASC LIMIT 1;
+    ''');
+
+      if (result.rows.isNotEmpty) {
+        Map<String, String?> rowMap = result.rows.first.assoc();
+        return Customer(
+          id: int.parse(rowMap['id'] ?? '0'),
+          fullName: rowMap['full_name'] ?? '',
+          vehicleType: rowMap['vehicle_type'] ?? '',
+          licensePlate: rowMap['license_plate'] ?? '',
+          document: rowMap['document'] ?? '',
+          company: rowMap['company'] ?? '',
+          ticketNumber: rowMap['ticket_number'] ?? '',
+          attended: int.parse(rowMap['attended'] ?? '0'),
+        );
+      } else {
+        return null; // No hay próximo cliente
+      }
+    } catch (e) {
+      print('Error al obtener el próximo cliente: $e');
       rethrow;
     } finally {
       await conn.close();

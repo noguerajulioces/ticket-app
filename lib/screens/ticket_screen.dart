@@ -26,7 +26,7 @@ class _TicketScreenState extends State<TicketScreen> {
     flutterTts = FlutterTts();
     flutterTts.setLanguage("es-US");
     flutterTts.setPitch(1.0); // Tono normal
-    flutterTts.setSpeechRate(0.5); // Velocidad más baja
+    flutterTts.setSpeechRate(0.3); // Velocidad más baja
 
     // Load the most recent unattended customer and video URL when the screen is initialized
     _loadMostRecentUnattendedCustomer();

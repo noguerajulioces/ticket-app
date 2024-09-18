@@ -24,14 +24,6 @@ class Layout extends StatelessWidget {
                   .grey[200], // Color de fondo para distinguir la barra lateral
               child: Column(
                 children: [
-                  // Opciones de navegación
-                  ListTile(
-                    title: const Text('Inicio'),
-                    leading: const Icon(Icons.dashboard),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/home');
-                    },
-                  ),
                   ListTile(
                     title: const Text('Lista de registrados'),
                     leading: const Icon(Icons.list),
