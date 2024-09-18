@@ -42,12 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final nextCustomer = await _dbService.getNextCustomers();
 
     setState(() {
-      if (currentCustomer != null) {
-        print("currentCustomer ${currentCustomer}");
-        _currentCustomer = currentCustomer;
-        _nextCustomer = nextCustomer;
-      } else {
+      if (currentCustomer == null && nextCustomer == null) {
         _currentCustomer = null;
+        _nextCustomer = null;
+      } else if (currentCustomer != null && nextCustomer == null) {
+        _currentCustomer = currentCustomer;
+        _nextCustomer = null;
+      } else {
+        _currentCustomer = currentCustomer;
         _nextCustomer = nextCustomer;
       }
     });
