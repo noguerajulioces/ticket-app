@@ -145,7 +145,14 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
                       ? const CircularProgressIndicator()
                       : ElevatedButton(
                           onPressed: _register,
-                          child: const Text('Registrar Cliente'),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.save), // Ícono de guardar
+                              SizedBox(width: 8.0),
+                              Text('Registrar'),
+                            ],
+                          ),
                         ),
                 ],
               ),

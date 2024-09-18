@@ -90,9 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildCurrentCustomerInfo(),
+                  _buildCurrentTurnInfo(),
                   const SizedBox(height: 20),
-                  _buildNextCustomerInfo(),
+                  _buildNextTurnInfo(),
                   const SizedBox(height: 20),
                   _buildAttendButton(),
                   const SizedBox(height: 20),
@@ -104,48 +104,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Construye el widget que muestra la información del cliente actual
-  Widget _buildCurrentCustomerInfo() {
+  Widget _buildCurrentTurnInfo() {
     return _currentCustomer != null
         ? Column(
             children: [
               Text(
-                'Atendiendo Cliente: ${_currentCustomer!.fullName}',
+                'Turno Actual: ${_currentCustomer!.fullName}',
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 10),
               Text(
-                'Ticket Number: ${_currentCustomer!.ticketNumber ?? 'N/A'}',
+                'Número de Turno: ${_currentCustomer!.ticketNumber ?? 'N/A'}',
                 style: const TextStyle(fontSize: 18),
               ),
             ],
           )
-        : const Text('No hay cliente actual.');
+        : const Text('No hay turno actual.');
   }
 
-  /// Construye el widget que muestra la información del próximo cliente
-  Widget _buildNextCustomerInfo() {
+  /// Construye el widget que muestra la información del próximo turno
+  Widget _buildNextTurnInfo() {
     return _nextCustomer != null
         ? Column(
             children: [
               Text(
-                'Próximo Cliente: ${_nextCustomer!.fullName}',
+                'Próximo Turno: ${_nextCustomer!.fullName}',
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 10),
               Text(
-                'Ticket Number: ${_nextCustomer!.ticketNumber ?? 'N/A'}',
+                'Número de Turno: ${_nextCustomer!.ticketNumber ?? 'N/A'}',
                 style: const TextStyle(fontSize: 18),
               ),
             ],
           )
-        : const Text('No hay más clientes.');
+        : const Text('No hay más turnos.');
   }
 
-  /// Construye el botón para atender al siguiente cliente
   Widget _buildAttendButton() {
     return ElevatedButton(
-      onPressed: _loadCustomers,
-      child: const Text('Atender Cliente'),
+      onPressed: _nextCustomer?.ticketNumber != null
+          ? _loadCustomers
+          : null, // Deshabilitar si el ticketNumber es null
+      child: Text('Atender a ${_nextCustomer?.ticketNumber ?? 'N/A'}'),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
       ),
@@ -155,12 +156,12 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Construye el botón para volver a llamar al cliente actual
   Widget _buildRecallButton() {
     return ElevatedButton(
-      onPressed: () {
-        if (_currentCustomer != null) {
-          _speakTicketNumber(_currentCustomer!.ticketNumber);
-        }
-      },
-      child: const Text('Volver a Llamar'),
+      onPressed: _currentCustomer?.ticketNumber != null
+          ? () {
+              _speakTicketNumber(_currentCustomer!.ticketNumber!);
+            }
+          : null, // Deshabilitar si el ticketNumber es null
+      child: Text('Llamar de nuevo ${_currentCustomer?.ticketNumber ?? 'N/A'}'),
     );
   }
 
