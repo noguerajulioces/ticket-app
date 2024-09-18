@@ -216,18 +216,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return ElevatedButton(
       onPressed: _currentCustomer?.ticketNumber != null
           ? () {
-              _speakTicketNumber(_currentCustomer!.ticketNumber!);
+              // Llamar a la función para actualizar el campo ready_for_sound
+              _dbService.updateReadyForSound(_currentCustomer!.id!, 1);
             }
           : null, // Deshabilitar si el ticketNumber es null
       child: Text('Llamar de nuevo ${_currentCustomer?.ticketNumber ?? 'N/A'}'),
       style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(
-            vertical: 40.0,
-            horizontal: 40.0,
-          ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          )),
+        padding: const EdgeInsets.symmetric(
+          vertical: 40.0,
+          horizontal: 40.0,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
+      ),
     );
   }
 

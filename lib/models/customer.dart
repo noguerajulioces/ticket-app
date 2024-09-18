@@ -12,6 +12,7 @@ class Customer {
   final int? attended;
   final DateTime? createdAt;
   final String? formattedCreatedAt;
+  final int? readyForSound;
 
   Customer({
     this.id,
@@ -24,6 +25,7 @@ class Customer {
     this.attended,
     this.createdAt,
     this.formattedCreatedAt,
+    this.readyForSound,
   });
 
   factory Customer.fromMap(Map<String, dynamic> map) {
@@ -40,6 +42,8 @@ class Customer {
         attended: map['attended'] != null
             ? int.tryParse(map['attended'].toString())
             : null,
+        readyForSound: int.tryParse(map['ready_for_sound'] ??
+            '0'), // Leer el campo desde la base de datos
         createdAt: map['createdApp'] as DateTime?,
         formattedCreatedAt: map['formattedCreatedAt'] as String?);
   }

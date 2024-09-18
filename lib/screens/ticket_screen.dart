@@ -47,6 +47,15 @@ class _TicketScreenState extends State<TicketScreen> {
       DatabaseService dbService = DatabaseService();
       Customer? recentCustomer = await dbService.getLastAttended();
 
+      // Verificamos si ready_for_sound es 1
+      if (recentCustomer?.readyForSound == 1) {
+        // Llamamos al método TTS para hablar el número de ticket
+        await _speakTicketNumber();
+
+        // Actualizamos ready_for_sound a 0 en la base de datos para que no vuelva a sonar
+        await dbService.updateReadyForSound(recentCustomer!.id!, 0);
+      }
+
       // Verificamos si el cliente ha cambiado
       if (_currentCustomer == null ||
           _currentCustomer!.id != recentCustomer!.id) {

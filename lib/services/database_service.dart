@@ -270,6 +270,37 @@ class DatabaseService {
     }
   }
 
+  /// Actualiza el campo ready_for_sound para el cliente con el ID dado.
+  Future<void> updateReadyForSound(
+      int customerId, int readyForSoundValue) async {
+    MySQLConnection? conn;
+    try {
+      // Conectar a la base de datos
+      conn = await _getConnection();
+
+      // Ejecutar la consulta para actualizar ready_for_sound con el valor proporcionado
+      await conn.execute(
+        'UPDATE customers SET ready_for_sound = :ready_for_sound WHERE id = :id',
+        {
+          'id': customerId,
+          'ready_for_sound': readyForSoundValue,
+        },
+      );
+
+      if (kDebugMode) {
+        print(
+            'ready_for_sound actualizado a $readyForSoundValue para el cliente con ID: $customerId');
+      }
+    } catch (e) {
+      print('Error al actualizar ready_for_sound: $e');
+      rethrow;
+    } finally {
+      if (conn != null) {
+        await conn.close();
+      }
+    }
+  }
+
   /// Generates the next ticket number based on the last ticket.
   ///
   /// Takes the current `lastTicket` as input and returns the next formatted ticket.
