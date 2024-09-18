@@ -111,15 +111,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       flex: 1,
                       child: Container(
                         padding: const EdgeInsets.all(16.0), // Padding interno
-                        margin: const EdgeInsets.only(
-                            right:
-                                20.0), // Margen entre los botones y la separación
-                        color: Colors.grey[
-                            200], // Color de fondo opcional para resaltar el área
+                        margin: const EdgeInsets.only(right: 10.0),
+                        color: Colors.grey[200],
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment
-                              .stretch, // Asegura que los botones ocupen todo el ancho
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             _buildAttendButton(),
                             const SizedBox(height: 20),
@@ -129,22 +125,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
 
-                    // Sección derecha: Información de turnos con margen y padding
                     Expanded(
                       flex: 2,
                       child: Container(
-                        padding: const EdgeInsets.all(16.0), // Padding interno
-                        margin: const EdgeInsets.only(
-                            left:
-                                20.0), // Margen entre los textos y la separación
-                        color: Colors.grey[
-                            100], // Color de fondo opcional para resaltar el área
+                        padding: const EdgeInsets.all(16.0),
+                        margin: const EdgeInsets.only(left: 16.0),
+                        color: Colors.grey[100],
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildCurrentTurnInfo(),
                             const SizedBox(height: 20),
+                            const Divider(
+                              color: Colors
+                                  .black, // Puedes cambiar el color del Divider
+                              thickness: 1.0, // Grosor de la línea del Divider
+                            ),
+                            const SizedBox(
+                                height:
+                                    20), // Espacio entre el Divider y el siguiente texto
                             _buildNextTurnInfo(),
                           ],
                         ),
@@ -161,15 +161,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCurrentTurnInfo() {
     return _currentCustomer != null
         ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Turno en Pantalla: ${_currentCustomer!.fullName}',
-                style: const TextStyle(fontSize: 20),
+                'Turno en Pantalla: ${_currentCustomer!.ticketNumber ?? 'N/A'}',
+                style: const TextStyle(fontSize: 24),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
-                'Número de Turno: ${_currentCustomer!.ticketNumber ?? 'N/A'}',
-                style: const TextStyle(fontSize: 18),
+                'Nombre: ${_currentCustomer!.fullName}',
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           )
@@ -192,12 +193,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           )
-        : const Text('No hay más turnos.');
+        : const Text('Siguiente: No hay.');
   }
 
   Widget _buildAttendButton() {
     return ElevatedButton(
-      onPressed: _attendCurrentCustomer,
+      onPressed: _nextCustomer == null ? null : _attendCurrentCustomer,
       child: const Text('Atender Próximo'),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),

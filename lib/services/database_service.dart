@@ -231,9 +231,10 @@ class DatabaseService {
       conn = await _getConnection();
 
       // Fetch the last ticket number
-      var result = await conn
-          .execute('SELECT MAX(ticket_number) AS last_ticket FROM customers');
-      String lastTicket = result.rows.first.assoc()['last_ticket'] ?? 'A0';
+      var result = await conn.execute(
+          'SELECT ticket_number AS last_ticket FROM customers ORDER BY created_at DESC LIMIT 1;');
+
+      String lastTicket = result.rows.first.assoc()['last_ticket'] ?? 'A00';
 
       // Generate the next ticket number
       String newTicketNumber = _generateNextTicket(lastTicket);
@@ -280,7 +281,7 @@ class DatabaseService {
     // Increment the number
     lastNumber++;
 
-    // If the number exceeds 99, reset to 1 and increment the letter
+    // If the number exceeds 99, reset to 01 and increment the letter
     if (lastNumber > 99) {
       lastNumber = 1;
       // Increment the letter (A -> B -> C ...)
@@ -292,7 +293,10 @@ class DatabaseService {
       lastLetter = 'A';
     }
 
-    // Return the new ticket number (e.g., "A1", "B45", etc.)
-    return '$lastLetter$lastNumber';
+    // Convert the number to a 2-digit string (e.g., "01", "09", "11", etc.)
+    String paddedNumber = lastNumber.toString().padLeft(2, '0');
+
+    // Return the new ticket number (e.g., "A01", "B45", etc.)
+    return '$lastLetter$paddedNumber';
   }
 }
