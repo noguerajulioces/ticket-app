@@ -31,9 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_currentCustomer == null) {
         // Si no hay cliente actual, cargar el cliente más reciente y el siguiente
         await _loadInitialCustomers();
-      } else {
-        // Si ya hay un cliente actual, marcarlo como atendido y cargar el siguiente
-        await _attendCurrentCustomer();
       }
     } catch (e) {
       print('Error loading customers: $e');
@@ -57,21 +54,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Marca al cliente actual como atendido y actualiza el siguiente cliente
   Future<void> _attendCurrentCustomer() async {
-    // Marcar al cliente actual como atendido
-    await _dbService.updateCustomerAttended(_currentCustomer!.id!);
+    if (_nextCustomer != null && _nextCustomer!.id != null) {
+      // Primero, actualiza el cliente actual como atendido en la base de datos
+      print("actualizo customer ${_nextCustomer!.id!}");
+      await _dbService.updateCustomerAttended(_nextCustomer!.id!);
 
-    setState(() {
-      // Mover el próximo cliente como el actual
-      _currentCustomer = _nextCustomer;
-      _isLoading =
-          true; // Mostrar el cargador mientras buscamos el siguiente cliente
-    });
+      // Luego, mover el próximo cliente como el actual
+      setState(() {
+        _currentCustomer =
+            _nextCustomer; // El siguiente cliente pasa a ser el actual
+        _isLoading =
+            true; // Mostrar el indicador de carga mientras buscamos el siguiente cliente
+      });
 
-    // Buscar el próximo cliente desde la base de datos
-    final customers = await _dbService.getCurrentAndNextCustomers();
-    setState(() {
-      _nextCustomer = customers.length > 1 ? customers[1] : null;
-    });
+      // Ahora buscar el nuevo próximo cliente desde la base de datos
+      final customers = await _dbService.getCurrentAndNextCustomers();
+
+      setState(() {
+        // Si hay más clientes, asignar el siguiente cliente a _nextCustomer
+        _nextCustomer = customers.length > 1 ? customers[1] : null;
+        _isLoading = false; // Dejar de mostrar el indicador de carga
+      });
+    } else {
+      // Manejar el caso en que _currentCustomer o su id es null
+      print('El cliente actual o su ID es null.');
+    }
   }
 
   /// Método para reproducir el número de ticket usando FlutterTTS
@@ -109,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ? Column(
             children: [
               Text(
-                'Turno Actual: ${_currentCustomer!.fullName}',
+                'Turno en Pantalla: ${_currentCustomer!.fullName}',
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 10),
@@ -143,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAttendButton() {
     return ElevatedButton(
-      onPressed: _loadCustomers,
-      child: const Text('Atender a Cliente'),
+      onPressed: _attendCurrentCustomer,
+      child: const Text('Atender Próximo'),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
         shape: const RoundedRectangleBorder(

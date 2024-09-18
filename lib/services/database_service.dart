@@ -153,8 +153,6 @@ class DatabaseService {
       await conn.execute('UPDATE customers SET attended = 1 WHERE id = :id', {
         'id': customerId,
       });
-
-      print('Customer marked as attended.');
     } catch (e) {
       print('Error updating customer: $e');
       rethrow;
