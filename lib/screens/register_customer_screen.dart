@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:ticket/services/pdf_printer_service.dart';
 import '../models/customer.dart';
 import '../services/database_service.dart';
 
@@ -38,6 +39,16 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
         DatabaseService dbService = DatabaseService();
 
         await dbService.insertCustomer(newCustomer);
+
+        // Crear una instancia del servicio de impresión
+        PdfPrinterService _pdfPrinterService = PdfPrinterService();
+
+        // Llamar al servicio de impresión para generar e imprimir el recibo
+        await _pdfPrinterService.generateAndPrintPdf(
+          newCustomer.ticketNumber ?? 'N/A',
+          newCustomer.fullName,
+          DateTime.now(),
+        );
 
         setState(() {
           _isLoading = false;
