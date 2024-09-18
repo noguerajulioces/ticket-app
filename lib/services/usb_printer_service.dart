@@ -16,22 +16,18 @@ class UsbPrinterService {
           await port.setRTS(true); // Ready To Send
           print('Conexión USB establecida con la impresora.');
 
-          // Proceder a imprimir
           await printTicketViaUsb(port);
 
-          port.close(); // Cierra el puerto cuando termines
+          port.close();
         }
       }
     } else {
-      // Si no hay impresoras USB, muestra un diálogo de alerta
       _showNoPrinterAlert(context);
     }
   }
 
   Future<void> printTicketViaUsb(UsbPort port) async {
-    // Aquí va la lógica de impresión a través del puerto USB
     print('Imprimiendo ticket...');
-    // Añadir lógica para enviar datos a la impresora aquí
   }
 
   void _showNoPrinterAlert(BuildContext context) {
@@ -45,7 +41,7 @@ class UsbPrinterService {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el diálogo
+                Navigator.of(context).pop();
               },
             ),
           ],
