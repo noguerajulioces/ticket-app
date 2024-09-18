@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import '../models/customer.dart';
+import '../services/usb_printer_service.dart';
 
 class CustomerListScreen extends StatefulWidget {
   @override
@@ -10,6 +11,9 @@ class CustomerListScreen extends StatefulWidget {
 
 class _CustomerListScreenState extends State<CustomerListScreen> {
   final DatabaseService _dbService = DatabaseService();
+  final UsbPrinterService printerService =
+      UsbPrinterService(); // Instancia del servicio
+
   List<Customer> _customers = [];
   bool _isLoading = true;
 
@@ -55,21 +59,32 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
             DataColumn(label: Text('Placa del vehículo')),
             DataColumn(label: Text('Ticket Número')),
             DataColumn(label: Text('Estado')),
+            DataColumn(label: Text('Imprimir')),
           ],
           rows: _customers.map((customer) {
-            return DataRow(cells: [
-              DataCell(Text(customer.id.toString())),
-              DataCell(
-                Text(customer.formattedCreatedAt ?? 'N/A'),
-              ),
-              DataCell(Text(customer.fullName)),
-              DataCell(Text(customer.vehicleType ?? 'N/A')),
-              DataCell(Text(customer.licensePlate ?? 'N/A')),
-              DataCell(Text(customer.ticketNumber ?? 'N/A')),
-              DataCell(
-                Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
-              ),
-            ]);
+            return DataRow(
+              cells: [
+                DataCell(Text(customer.id.toString())),
+                DataCell(
+                  Text(customer.formattedCreatedAt ?? 'N/A'),
+                ),
+                DataCell(Text(customer.fullName)),
+                DataCell(Text(customer.vehicleType ?? 'N/A')),
+                DataCell(Text(customer.licensePlate ?? 'N/A')),
+                DataCell(Text(customer.ticketNumber ?? 'N/A')),
+                DataCell(
+                  Text(customer.attended == 1 ? 'Atendido' : 'Sin atender'),
+                ),
+                DataCell(ElevatedButton(
+                  onPressed: () async {
+                    await printerService.findAndPrintViaUsb(context);
+                  },
+                  child: const Text(
+                    'Imprimir',
+                  ),
+                ))
+              ],
+            );
           }).toList(),
         ),
       ),

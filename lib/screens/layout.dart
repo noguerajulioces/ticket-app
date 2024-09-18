@@ -12,6 +12,7 @@ class Layout extends StatelessWidget {
       // Mantén el AppBar si lo deseas
       appBar: AppBar(
         title: const Text('Generación de Turnos'),
+        automaticallyImplyLeading: false,
       ),
       body: Row(
         children: [

@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onPressed: _loadCustomers,
       child: const Text('Atender Cliente'),
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 40.0),
+        padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
       ),
     );
   }

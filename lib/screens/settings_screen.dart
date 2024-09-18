@@ -149,7 +149,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // Botón para guardar configuraciones
                       ElevatedButton(
                         onPressed: _saveSettings,
-                        child: const Text('Save Settings'),
+                        child: const Text('Guardar configuración'),
                       ),
                     ],
                   ),
