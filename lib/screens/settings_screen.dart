@@ -102,8 +102,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Parte izquierda: Formulario
             Expanded(
               flex: 1,
-              child: Padding(
+              child: Container(
                 padding: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.only(
+                    right: 16.0), // Espacio entre los Expanded
+                decoration: BoxDecoration(
+                  color: Colors.grey[200], // Fondo gris claro
+                  borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8.0, // Sombra suave
+                      offset: Offset(2, 2), // Desplazamiento de la sombra
+                    ),
+                  ],
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -157,13 +170,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            const SizedBox(width: 32),
-
             // Parte derecha: Mostrar información actual
             Expanded(
               flex: 1,
-              child: Padding(
+              child: Container(
                 padding: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.only(
+                    left: 16.0), // Espacio entre los Expanded
+                decoration: BoxDecoration(
+                  color: Colors.grey[100], // Fondo gris aún más claro
+                  borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 8.0, // Sombra suave
+                      offset: Offset(2, 2), // Desplazamiento de la sombra
+                    ),
+                  ],
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

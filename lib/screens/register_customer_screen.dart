@@ -25,9 +25,6 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
       });
       _formKey.currentState!.save();
 
-      // Generate the ticket number
-      String ticketNumber = _generarNumeroDeTicket();
-
       // Create a new customer
       Customer newCustomer = Customer(
         fullName: _fullName!,
@@ -35,7 +32,6 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
         licensePlate: _licensePlate,
         document: _document!,
         company: _company,
-        ticketNumber: ticketNumber,
       );
 
       try {
@@ -54,7 +50,8 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
         );
 
         // Pop the screen and return a result indicating success
-        Navigator.pushReplacementNamed(context, '/home'); // Navigating to home
+        Navigator.pushReplacementNamed(
+            context, '/customer_list'); // Navigating to home
       } catch (e) {
         setState(() {
           _isLoading = false;
