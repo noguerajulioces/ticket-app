@@ -6,6 +6,8 @@ class AuthService {
   final DatabaseService _databaseService = DatabaseService();
 
   Future<bool> login(String username, String password) async {
+    await Future.delayed(const Duration(seconds: 2));
+
     // Si el username es 'admin', hacer la autenticación localmente
     if (username == 'admin' && password == '12345') {
       return true;
