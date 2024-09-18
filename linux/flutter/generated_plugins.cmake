@@ -3,7 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  charset_converter
+  printing
   url_launcher_linux
 )
 

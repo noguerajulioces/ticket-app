@@ -3,8 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  charset_converter
   flutter_tts
+  printing
   syncfusion_pdfviewer_windows
   url_launcher_windows
 )

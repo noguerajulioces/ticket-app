@@ -82,20 +82,11 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         // Generar y guardar el PDF
-                        String pdfPath =
-                            await _pdfPrinterService.generateAndSavePdf(
+                        void pdfPath =
+                            await _pdfPrinterService.generateAndPrintPdf(
                           customer.ticketNumber.toString(),
                           customer.fullName,
                           DateTime.now(),
-                        );
-
-                        // Navegar a la pantalla de visualización de PDF
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PdfViewerScreen(pdfPath: pdfPath),
-                          ),
                         );
                       },
                       child: const Icon(Icons.print),

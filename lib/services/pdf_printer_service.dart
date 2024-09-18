@@ -3,10 +3,11 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart'; // Para obtener rutas de archivos
 import 'package:intl/intl.dart'; // Para formatear la fecha
+import 'package:printing/printing.dart';
 
 class PdfPrinterService {
-  /// Genera y guarda un recibo en formato PDF, luego devuelve la ruta del archivo guardado.
-  Future<String> generateAndSavePdf(
+  /// Genera, guarda e imprime un recibo en formato PDF.
+  Future<void> generateAndPrintPdf(
       String ticketNumber, String fullName, DateTime createdAt) async {
     final pdf = pw.Document();
 
@@ -56,6 +57,9 @@ class PdfPrinterService {
     final file = File(outputPath);
     await file.writeAsBytes(await pdf.save());
 
-    return outputPath; // Devolver la ruta del archivo PDF
+    // Ahora imprimimos directamente el PDF generado
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => pdf.save(),
+    );
   }
 }
