@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:ticket/screens/layout.dart';
@@ -15,12 +17,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Customer? _nextCustomer; // Próximo cliente
   bool _isLoading = true;
   late FlutterTts _flutterTts;
+  Timer? _pollingTimer; // Timer para el polling
 
   @override
   void initState() {
     super.initState();
     _flutterTts = FlutterTts();
-    _loadCustomers(); // Cargar clientes al iniciar
+    _loadCustomers();
+    _startPolling();
+  }
+
+  /// Iniciar el polling para verificar nuevos clientes
+  void _startPolling() {
+    print("Run polling");
+    _pollingTimer = Timer.periodic(
+        const Duration(
+          seconds: 15,
+        ), (timer) {
+      _loadCustomers();
+    });
   }
 
   /// Cargar clientes actuales y próximos
@@ -215,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _pollingTimer?.cancel();
     _flutterTts.stop();
     super.dispose();
   }
