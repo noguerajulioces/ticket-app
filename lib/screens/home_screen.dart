@@ -143,12 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAttendButton() {
     return ElevatedButton(
-      onPressed: _nextCustomer?.ticketNumber != null
-          ? _loadCustomers
-          : null, // Deshabilitar si el ticketNumber es null
-      child: Text('Atender a ${_nextCustomer?.ticketNumber ?? 'N/A'}'),
+      onPressed: _loadCustomers,
+      child: const Text('Atender a Cliente'),
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero, // Esquinas rectas
+        ),
       ),
     );
   }
@@ -162,6 +163,14 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           : null, // Deshabilitar si el ticketNumber es null
       child: Text('Llamar de nuevo ${_currentCustomer?.ticketNumber ?? 'N/A'}'),
+      style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(
+            vertical: 40.0,
+            horizontal: 40.0,
+          ),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          )),
     );
   }
 
