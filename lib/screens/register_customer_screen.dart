@@ -66,13 +66,6 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
     }
   }
 
-// Método para generar un número de ticket (puede ser secuencial o basado en otra lógica)
-  String _generarNumeroDeTicket() {
-    // Ejemplo: Generar un número de ticket simple, podrías modificar esta lógica
-    int ticketBase = 1000; // Lógica simple de ejemplo
-    return 'TKT-${ticketBase + Random().nextInt(1000)}'; // Ejemplo de número de ticket
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
