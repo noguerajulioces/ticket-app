@@ -38,14 +38,17 @@ class _RegisterCustomerScreenState extends State<RegisterCustomerScreen> {
       try {
         DatabaseService dbService = DatabaseService();
 
-        await dbService.insertCustomer(newCustomer);
+        final ticket = await dbService.insertCustomer(newCustomer);
 
         // Crear una instancia del servicio de impresión
         PdfPrinterService _pdfPrinterService = PdfPrinterService();
 
+        print("new customer ${ticket}");
+
+        print("new customer ${newCustomer.fullName}");
         // Llamar al servicio de impresión para generar e imprimir el recibo
         await _pdfPrinterService.generateAndPrintPdf(
-          newCustomer.ticketNumber ?? 'N/A',
+          ticket ?? 'N/A',
           newCustomer.fullName,
           DateTime.now(),
         );

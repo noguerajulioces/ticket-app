@@ -225,7 +225,7 @@ class DatabaseService {
   /// Inserts a new customer into the database with an auto-generated ticket number.
   ///
   /// The ticket number is generated based on the last ticket in the database.
-  Future<void> insertCustomer(Customer customer) async {
+  Future<String> insertCustomer(Customer customer) async {
     MySQLConnection? conn;
     try {
       conn = await _getConnection();
@@ -256,6 +256,8 @@ class DatabaseService {
         print(
             'Customer inserted successfully with ticket number: $newTicketNumber');
       }
+
+      return newTicketNumber;
     } catch (e, stacktrace) {
       print('Error inserting customer: $e');
       print('Stacktrace: $stacktrace');
