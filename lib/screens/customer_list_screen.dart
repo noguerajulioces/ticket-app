@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ticket/screens/pdf_viewer_screen.dart';
+import 'package:ticket/services/pdf_printer_service.dart';
 import '../services/database_service.dart';
 import '../models/customer.dart';
-import '../services/usb_printer_service.dart';
 
 class CustomerListScreen extends StatefulWidget {
   @override
@@ -11,8 +12,7 @@ class CustomerListScreen extends StatefulWidget {
 
 class _CustomerListScreenState extends State<CustomerListScreen> {
   final DatabaseService _dbService = DatabaseService();
-  final UsbPrinterService printerService =
-      UsbPrinterService(); // Instancia del servicio
+  final PdfPrinterService _pdfPrinterService = PdfPrinterService();
 
   List<Customer> _customers = [];
   bool _isLoading = true;
@@ -81,7 +81,22 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                   DataCell(
                     ElevatedButton(
                       onPressed: () async {
-                        await printerService.findAndPrintViaUsb(context);
+                        // Generar y guardar el PDF
+                        String pdfPath =
+                            await _pdfPrinterService.generateAndSavePdf(
+                          customer.ticketNumber.toString(),
+                          customer.fullName,
+                          DateTime.now(),
+                        );
+
+                        // Navegar a la pantalla de visualización de PDF
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PdfViewerScreen(pdfPath: pdfPath),
+                          ),
+                        );
                       },
                       child: const Icon(Icons.print),
                     ),

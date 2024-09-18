@@ -109,7 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 decoration: BoxDecoration(
                   color: Colors.grey[200], // Fondo gris claro
                   borderRadius: BorderRadius.circular(10), // Bordes redondeados
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 8.0, // Sombra suave
@@ -180,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 decoration: BoxDecoration(
                   color: Colors.grey[100], // Fondo gris aún más claro
                   borderRadius: BorderRadius.circular(10), // Bordes redondeados
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 8.0, // Sombra suave
