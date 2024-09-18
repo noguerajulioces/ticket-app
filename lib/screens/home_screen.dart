@@ -181,15 +181,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildNextTurnInfo() {
     return _nextCustomer != null
         ? Column(
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Alineación a la izquierda
             children: [
               Text(
-                'Próximo Turno: ${_nextCustomer!.fullName}',
-                style: const TextStyle(fontSize: 20),
+                'Próximo Turno: ${_nextCustomer!.ticketNumber ?? 'N/A'}',
+                style: const TextStyle(fontSize: 24),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
-                'Número de Turno: ${_nextCustomer!.ticketNumber ?? 'N/A'}',
-                style: const TextStyle(fontSize: 18),
+                'Nombre: ${_nextCustomer!.fullName}',
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           )
