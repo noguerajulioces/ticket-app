@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -16,7 +17,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late TextEditingController _userNameController;
   late TextEditingController _passwordController;
   late TextEditingController _databaseNameController;
-  String? _videoUrl;
+  File? _videoUrl; // Cambiamos a File
 
   @override
   void initState() {
@@ -36,13 +37,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      // Asignar los valores de SharedPreferences a los controladores
       _hostController.text = prefs.getString('dbHost') ?? '';
       _portController.text = prefs.getString('dbPort') ?? '';
       _userNameController.text = prefs.getString('dbUserName') ?? '';
       _passwordController.text = prefs.getString('dbPassword') ?? '';
       _databaseNameController.text = prefs.getString('dbName') ?? '';
-      _videoUrl = prefs.getString('videoUrl') ?? '';
+
+      // Convertir la ruta guardada en un File
+      String? videoPath = prefs.getString('videoUrl');
+      if (videoPath != null && videoPath.isNotEmpty) {
+        _videoUrl = File(videoPath);
+      }
     });
   }
 
@@ -59,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       // Guardar la ruta del video
       if (_videoUrl != null) {
-        await prefs.setString('videoUrl', _videoUrl!);
+        await prefs.setString('videoUrl', _videoUrl!.path);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,15 +78,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       type: FileType.video,
     );
 
-    if (result != null) {
-      String? filePath = result.files.single.path;
+    if (result != null && result.files.single.path != null) {
+      // Convertir la ruta del archivo a un File
       setState(() {
-        _videoUrl = filePath;
+        _videoUrl = File(result.files.single.path!);
       });
 
-      // Guardar la ruta del video en SharedPreferences
+      // Guardar la ruta del archivo en SharedPreferences
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('videoUrl', _videoUrl!);
+      await prefs.setString('videoUrl', _videoUrl!.path);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -94,26 +99,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Configuración')),
       body: Padding(
-        padding: const EdgeInsets.all(
-            32.0), // Padding más amplio alrededor del contenedor
+        padding: const EdgeInsets.all(32.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start, // Centrar horizontalmente
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Parte izquierda: Formulario
             Expanded(
               flex: 1,
               child: Container(
                 padding: const EdgeInsets.all(16.0),
-                margin: const EdgeInsets.only(
-                    right: 16.0), // Espacio entre los Expanded
+                margin: const EdgeInsets.only(right: 16.0),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200], // Fondo gris claro
-                  borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 8.0, // Sombra suave
-                      offset: Offset(2, 2), // Desplazamiento de la sombra
+                      blurRadius: 8.0,
+                      offset: Offset(2, 2),
                     ),
                   ],
                 ),
@@ -169,22 +171,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-
-            // Parte derecha: Mostrar información actual
             Expanded(
               flex: 1,
               child: Container(
                 padding: const EdgeInsets.all(16.0),
-                margin: const EdgeInsets.only(
-                    left: 16.0), // Espacio entre los Expanded
+                margin: const EdgeInsets.only(left: 16.0),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100], // Fondo gris aún más claro
-                  borderRadius: BorderRadius.circular(10), // Bordes redondeados
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: const [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 8.0, // Sombra suave
-                      offset: Offset(2, 2), // Desplazamiento de la sombra
+                      blurRadius: 8.0,
+                      offset: Offset(2, 2),
                     ),
                   ],
                 ),
@@ -208,13 +207,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 10),
                     Text('Database Name: ${_databaseNameController.text}'),
                     const SizedBox(height: 20),
-                    if (_videoUrl != null && _videoUrl!.isNotEmpty)
+                    if (_videoUrl != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
-                        child: Text('Selected video: $_videoUrl'),
+                        child: Text('Selected video: ${_videoUrl!.path}'),
                       ),
-                    if (_videoUrl == null || _videoUrl!.isEmpty)
-                      const Text('No video selected'),
+                    if (_videoUrl == null) const Text('No video selected'),
                   ],
                 ),
               ),
@@ -227,7 +225,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
-    // Liberar los controladores
     _hostController.dispose();
     _portController.dispose();
     _userNameController.dispose();

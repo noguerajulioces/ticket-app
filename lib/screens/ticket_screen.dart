@@ -68,9 +68,11 @@ class _TicketScreenState extends State<TicketScreen> {
         await _speakTicketNumber();
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       print("Error loading customer: $e");
     }
   }
