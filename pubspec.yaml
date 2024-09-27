@@ -76,6 +76,8 @@ flutter:
   assets:
     - lib/assets/images_l59_icon.ico
     - lib/assets/logo.png
+    - lib/assets/video.mp4
+    - lib/assets/video_2.mp4
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

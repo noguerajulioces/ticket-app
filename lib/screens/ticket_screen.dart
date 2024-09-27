@@ -1,7 +1,10 @@
 import 'dart:async'; // Importamos para usar Timer
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:ticket/services/database_service.dart';
 import 'package:ticket/models/customer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +20,7 @@ class _TicketScreenState extends State<TicketScreen> {
   Customer? _currentCustomer;
   bool _isLoading = true;
   VideoPlayerController? _videoController;
+  VideoPlayerController? _controller;
   String? _videoUrl;
   Timer? _pollingTimer; // Declaramos el Timer
 
@@ -30,7 +34,7 @@ class _TicketScreenState extends State<TicketScreen> {
 
     // Load the most recent unattended customer and video URL when the screen is initialized
     _loadMostRecentUnattendedCustomer();
-    _loadVideoUrl();
+    _loadVideoFromAssets();
 
     // Iniciar el polling cada 1 segundo
     _pollingTimer = Timer.periodic(
@@ -73,6 +77,29 @@ class _TicketScreenState extends State<TicketScreen> {
       });
       print("Error loading customer: $e");
     }
+  }
+
+  Future<void> _loadVideoFromAssets() async {
+    // Obtener el directorio temporal
+    final Directory tempDir = await getTemporaryDirectory();
+    final String tempPath = '${tempDir.path}/video.mp4';
+
+    // Copiar el archivo desde los assets a la ubicación temporal
+    final ByteData data = await rootBundle.load('lib/assets/video_2.mp4');
+    final List<int> bytes = data.buffer.asUint8List();
+    final File tempFile = File(tempPath);
+    await tempFile.writeAsBytes(bytes, flush: true);
+
+    // Inicializar el controlador de video
+    _controller = VideoPlayerController.file(File(tempPath))
+      ..initialize().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+        _controller!.setVolume(0.10);
+        _controller!.setLooping(true); // Repetir el video
+        _controller!.play(); // Iniciar la reproducción automáticamente
+      });
   }
 
   // Load the video URL from SharedPreferences
@@ -173,12 +200,14 @@ class _TicketScreenState extends State<TicketScreen> {
                       Colors.black, // Fondo negro como en el ejemplo del video
                   child: Center(
                     child: _isLoading
-                        ? const CircularProgressIndicator() // Mostrar indicador de carga mientras se carga la imagen
-                        : Image.asset(
-                            'lib/assets/logo.png', // Ruta de la imagen dentro de los assets
-                            fit: BoxFit
-                                .contain, // Ajustar la imagen dentro del contenedor
-                          ),
+                        ? const CircularProgressIndicator() // Mostrar cargando mientras se carga el video
+                        : _controller != null &&
+                                _controller!.value.isInitialized
+                            ? AspectRatio(
+                                aspectRatio: _controller!.value.aspectRatio,
+                                child: VideoPlayer(_controller!),
+                              )
+                            : const Text('No se pudo cargar el video'),
                   ),
                 ),
               ),
