@@ -106,3 +106,4 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../build/windows/plugins/video_player/video_player_plugin" "video_player")
