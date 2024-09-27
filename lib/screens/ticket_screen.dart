@@ -166,7 +166,24 @@ class _TicketScreenState extends State<TicketScreen> {
                   ),
                 ),
               ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  color:
+                      Colors.black, // Fondo negro como en el ejemplo del video
+                  child: Center(
+                    child: _isLoading
+                        ? const CircularProgressIndicator() // Mostrar indicador de carga mientras se carga la imagen
+                        : Image.asset(
+                            'lib/assets/logo.png', // Ruta de la imagen dentro de los assets
+                            fit: BoxFit
+                                .contain, // Ajustar la imagen dentro del contenedor
+                          ),
+                  ),
+                ),
+              ),
               // Right section for displaying the video
+              /* 
               Expanded(
                 flex: 1,
                 child: Container(
@@ -185,7 +202,7 @@ class _TicketScreenState extends State<TicketScreen> {
                             : const Text('No video available'),
                   ),
                 ),
-              ),
+              ),*/
             ],
           ),
           // Botón pequeño para volver al inicio
