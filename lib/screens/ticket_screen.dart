@@ -96,7 +96,7 @@ class _TicketScreenState extends State<TicketScreen> {
         setState(() {
           _isLoading = false;
         });
-        _controller!.setVolume(0.10);
+        _controller!.setVolume(1.0);
         _controller!.setLooping(true); // Repetir el video
         _controller!.play(); // Iniciar la reproducción automáticamente
       });
