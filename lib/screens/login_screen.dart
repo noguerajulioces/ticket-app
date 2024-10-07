@@ -45,13 +45,20 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Container(
-          margin: const EdgeInsets.all(172.0),
+          margin: const EdgeInsets.all(32.0),
           padding: const EdgeInsets.all(32.0),
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Aquí agregamos el logo
+                Image.asset(
+                  'lib/assets/logo.png', // Ruta al logo en los assets
+                  height: 200, // Ajusta el tamaño según sea necesario
+                ),
+                const SizedBox(
+                    height: 32.0), // Espacio entre el logo y el formulario
                 TextFormField(
                   decoration: const InputDecoration(labelText: 'Username'),
                   validator: (value) {
