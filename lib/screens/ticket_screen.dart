@@ -34,7 +34,8 @@ class _TicketScreenState extends State<TicketScreen> {
 
     // Load the most recent unattended customer and video URL when the screen is initialized
     _loadMostRecentUnattendedCustomer();
-    _loadVideoFromAssets();
+    //_loadVideoFromAssets();
+    _loadVideoUrl();
 
     // Iniciar el polling cada 1 segundo
     _pollingTimer = Timer.periodic(
@@ -193,6 +194,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   ),
                 ),
               ),
+              /* 
               Expanded(
                 flex: 1,
                 child: Container(
@@ -211,8 +213,9 @@ class _TicketScreenState extends State<TicketScreen> {
                   ),
                 ),
               ),
+              */
               // Right section for displaying the video
-              /* 
+
               Expanded(
                 flex: 1,
                 child: Container(
@@ -231,7 +234,7 @@ class _TicketScreenState extends State<TicketScreen> {
                             : const Text('No video available'),
                   ),
                 ),
-              ),*/
+              ),
             ],
           ),
           // Botón pequeño para volver al inicio
