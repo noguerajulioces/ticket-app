@@ -64,7 +64,7 @@ class Layout extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(bottom: 16.0),
                         child: Text(
-                          'Bienvenido',
+                          'Yerbatera Selent',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
