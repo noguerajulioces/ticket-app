@@ -119,7 +119,7 @@ class _TicketScreenState extends State<TicketScreen> {
         ..initialize().then((_) {
           setState(() {
             _isLoading = false;
-            _videoController!.setVolume(0.8);
+            _videoController!.setVolume(0.5);
             _videoController!.setLooping(true);
             _videoController!.play();
           });
